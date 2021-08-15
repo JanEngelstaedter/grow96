@@ -1,18 +1,15 @@
 # functions to automatically generate spec files
 
 # to dos:
-#    - write file
 #    - graphical output
 #    - roxygen
-
-
 
 #' Title
 #'
 #' @param rowName
-#' @param colName
+#' @param columnName
 #' @param rows
-#' @param cols
+#' @param columns
 #' @param reps
 #' @param randomise
 #' @param plateName
@@ -26,13 +23,13 @@
 #' @examples
 makeSpec_fullfact <- function(plateName,
                               rowName,
-                              colName,
+                              columnName,
                               rows,
-                              cols,
+                              columns,
                               border = NULL,
                               borderStyle = 'NAs',
                               blankRows = NULL,
-                              blankCols = NULL,
+                              blankColumns = NULL,
                               reps = NULL,
                               constants = NULL,
                               randomise = NULL,
@@ -53,7 +50,7 @@ makeSpec_fullfact <- function(plateName,
   # initial checks:
   if (length(rows) !=nrowsUsed)
     stop(paste(nrows, "rows expected."))
-  if (length(cols) !=ncolsUsed)
+  if (length(columns) !=ncolsUsed)
     stop(paste(ncols, "columns expected."))
   if (!is.null(border) && border != 'EMPTY' && border != 'BLANK')
     stop("Unexpected value for 'border' argument: must be 'EMPTY' or 'BLANK'.")
@@ -71,13 +68,13 @@ makeSpec_fullfact <- function(plateName,
     vWellType[2:(nrowsTotal-1), 2:(ncolsTotal-1)] <- matrix("DATA", nrow=nrowsUsed, ncol=ncolsUsed)
     if (!is.null(blankRows))
       vWellType[blankRows, 2:(ncolsTotal-1)] <- "BLANK"
-    if (!is.null(blankCols))
+    if (!is.null(blankColumns))
       vWellType[2:(nrowsTotal-1), blankColumns] <- "BLANK"
   } else {
     vWellType <- matrix("DATA", nrow = nrowsTotal, ncol = ncolsTotal)
     if (!is.null(blankRows))
       vWellType[blankRows, 1:ncolsTotal] <- "BLANK"
-    if (!is.null(blankCols))
+    if (!is.null(blankColumns))
       vWellType[1:nrowsTotal, blankColumns] <- "BLANK"
   }
 
@@ -91,12 +88,12 @@ makeSpec_fullfact <- function(plateName,
 
     vVarColumn <- matrix(NA, nrow = nrowsTotal, ncol = ncolsTotal)
     if (borderStyle %in% c('extendColumns', 'extendBoth'))
-      vVarColumn[1:nrowsTotal, 2:(ncolsTotal-1)] <- matrix(cols, nrow=nrowsTotal, ncol=ncolsUsed, byrow=TRUE)
+      vVarColumn[1:nrowsTotal, 2:(ncolsTotal-1)] <- matrix(columns, nrow=nrowsTotal, ncol=ncolsUsed, byrow=TRUE)
     else
-      vVarColumn[2:(nrowsTotal-1), 2:(ncolsTotal-1)] <- matrix(cols, nrow=nrowsUsed, ncol=ncolsUsed, byrow=TRUE)
+      vVarColumn[2:(nrowsTotal-1), 2:(ncolsTotal-1)] <- matrix(columns, nrow=nrowsUsed, ncol=ncolsUsed, byrow=TRUE)
   } else {
     vVarRow <- matrix(rows, nrow = nrowsTotal, ncol = ncolsTotal)
-    vVarColumn <- matrix(cols, nrow = nrowsTotal, ncol = ncolsTotal, byrow = TRUE)
+    vVarColumn <- matrix(columns, nrow = nrowsTotal, ncol = ncolsTotal, byrow = TRUE)
   }
 
   # matrices for constant variables:
@@ -147,7 +144,7 @@ makeSpec_fullfact <- function(plateName,
                          VarRow = as.vector(vVarRow),
                          VarCol = as.vector(vVarColumn))
     names(specDF)[names(specDF) == "VarRow"] <- rowName
-    names(specDF)[names(specDF) == "VarCol"] <- colName
+    names(specDF)[names(specDF) == "VarCol"] <- columnName
 
     # add constant columns:
     if (!is.null(constants))
@@ -194,7 +191,7 @@ makeSpec_fullfact <- function(plateName,
                                    VarRow = as.vector(vVarRowRep),
                                    VarCol = as.vector(vVarColumnRep))
       names(specDFs[[r]])[names(specDFs[[r]]) == "VarRow"] <- rowName
-      names(specDFs[[r]])[names(specDFs[[r]]) == "VarCol"] <- colName
+      names(specDFs[[r]])[names(specDFs[[r]]) == "VarCol"] <- columnName
 
       # add constant columns:
       if (!is.null(constants))
@@ -216,15 +213,20 @@ makeSpec_fullfact <- function(plateName,
 }
 
 border <- "EMPTY"
-drugs <- c("STP", "RIF", "TMP", "KAN", "CIP", "NONE")
-strains <- paste0("S", 1:10)
+rows <- c("STP", "RIF", "TMP", "KAN", "CIP", "NONE")
+columns <- paste0("Strain", 1:10)
 constants <- c(Medium = "LB+")
+plateName <- "test"
+rowName <- "Drug"
+columnName <- "Strain"
+blankColumns <- NULL
+blankRows <- 7
 
 makeSpec_fullfact("test", "Drug", "Strain", drugs, strains,
                   border = "EMPTY",
                   borderStyle = "extendBoth",
                   blankRows = 7,
                   constants = constants,
-                  reps = 3,
-                  randomise = "both",
+                  reps = NULL,
+                  randomise = NULL,
                   path = "./data/")
