@@ -5,8 +5,8 @@ specPlot <- function(plateName,
                      columns,
                      border,
                      fileName) {
-  plateX <- 0.1
-  plateY <- 0.2
+  plateX <- 0.03
+  plateY <- 0.3
   wellWidth = 0.03
   wellHeight = 0.046
   nrowsTotal <- 8
@@ -14,6 +14,11 @@ specPlot <- function(plateName,
   labelSize <- 10
   colLabelDist <- 0.02
   rowLabelDist <- 0.01
+  legendX <- 0.07
+  legendY <- 0.8
+  legendWidth <- 0.08
+  legendHeight <- wellHeight
+  legendXSpace <- 0.02
   colBLANK <- "orange"
   colDATA <- "blue"
   colEMPTY <- "grey"
@@ -47,12 +52,32 @@ specPlot <- function(plateName,
           c(plateY, plateY + nrowsTotal * wellHeight))
     if(i>0) {
       text(plateX + (i-0.5) * wellWidth, plateY - colLabelDist,
-           i, adj = c(0.5, 0.5))
+           columns[i], adj = c(1, 0.5), srt = 90)
       text(plateX + (i-0.5) * wellWidth, plateY + 8*wellHeight + colLabelDist,
-           columns[i], adj = c(0, 0.5), srt = 90)
+           i, adj = c(0.5, 0.5))
     }
   }
-  text(0, 1, plateName, adj = c(0, 1), cex = 3)
-  if (!is.null(rep)) text(0, 0.91, paste0("Replicate #", replicate), adj = c(0, 1), cex = 2)
+  # titles:
+  text(0, 1, plateName, adj = c(0, 1), cex = 2.8)
+  if (!is.null(rep)) text(0, 0.91, paste0("Replicate #", replicate), adj = c(0, 1), cex = 1.4)
+
+  #legend:
+  #legendX <- 0.1
+  #legendY <- 0.8
+  #legendWidth <- 0.05
+  #legendHeight <- 0.03
+  #legendXSpace <- 0.02
+  rect(legendX, legendY - legendHeight,
+       legendX + legendWidth, legendY, col = colDATA)
+  rect(legendX + legendWidth + legendXSpace, legendY - legendHeight,
+       legendX + 2*legendWidth + legendXSpace, legendY, col = colBLANK)
+  rect(legendX + 2*legendWidth + 2*legendXSpace, legendY - legendHeight,
+       legendX + 3*legendWidth + 2*legendXSpace, legendY, col = colEMPTY)
+  text(legendX + legendWidth/2, legendY - legendHeight/2,
+       "DATA", adj = c(0.5, 0.5))
+  text(legendX + 3*legendWidth/2 + legendXSpace, legendY - legendHeight/2,
+       "BLANK", adj = c(0.5, 0.5))
+  text(legendX + 5*legendWidth/2 + 2*legendXSpace, legendY - legendHeight/2,
+       "EMPTY", adj = c(0.5, 0.5))
   dev.off()
 }

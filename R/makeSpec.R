@@ -1,7 +1,6 @@
 # functions to automatically generate spec files
 
 # to dos:
-#    - graphical output
 #    - roxygen
 
 #' Title
@@ -16,6 +15,10 @@
 #' @param border
 #' @param constants
 #' @param path
+#' @param borderStyle
+#' @param blankRows
+#' @param blankColumns
+#' @param makePlot
 #'
 #' @return
 #' @export
@@ -204,7 +207,8 @@ makeSpec_fullfact <- function(plateName,
 
       if (makePlot) {
         fileName <- paste0(path, "specplot_", plateName, "_rep", r, ".pdf")
-        specPlot(vRow, vColumn, vWell, vWellTypeRep, vVarRowRep, vVarColumnRep, fileName)
+        specPlot(plateName, r, vWellTypeRep,
+                 na.omit(vVarRowRep[,2]), na.omit(vVarColumnRep[2,]), border, fileName)
         print(paste0("Spec plot file ", fileName, " written."))
       }
     }
@@ -227,6 +231,6 @@ makeSpec_fullfact("test", "Drug", "Strain", drugs, strains,
                   borderStyle = "extendBoth",
                   blankRows = 7,
                   constants = constants,
-                  reps = NULL,
-                  randomise = NULL,
+                  reps = 3,
+                  randomise = "rows",
                   path = "./data/")
