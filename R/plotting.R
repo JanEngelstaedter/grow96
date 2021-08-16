@@ -1,10 +1,20 @@
-specPlot <- function(plateName,
-                     replicate,
-                     vWellType,
-                     rows,
-                     columns,
-                     border,
-                     fileName) {
+#' Generate a pdf file with a plot of a plate design
+#'
+#' @param plateName Name of the plate.
+#' @param replicate Replicate plate number.
+#' @param vWellType A matrix specifying the type of each well ("DATA", "BLANK" or "EMPTY")
+#' @param rows A vector of values of the row variable
+#' @param columns A vector of values of the column variable
+#' @param border Type of border
+#' @param fileName File name of for the pdf (including path)
+#'
+specPlot_fullFact <- function(plateName,
+                              replicate,
+                              vWellType,
+                              rows,
+                              columns,
+                              border,
+                              fileName) {
   plateX <- 0.03
   plateY <- 0.3
   wellWidth = 0.03
@@ -59,14 +69,8 @@ specPlot <- function(plateName,
   }
   # titles:
   text(0, 1, plateName, adj = c(0, 1), cex = 2.8)
-  if (!is.null(rep)) text(0, 0.91, paste0("Replicate #", replicate), adj = c(0, 1), cex = 1.4)
+  if (!is.null(replicate)) text(0, 0.91, paste0("Replicate #", replicate), adj = c(0, 1), cex = 1.4)
 
-  #legend:
-  #legendX <- 0.1
-  #legendY <- 0.8
-  #legendWidth <- 0.05
-  #legendHeight <- 0.03
-  #legendXSpace <- 0.02
   rect(legendX, legendY - legendHeight,
        legendX + legendWidth, legendY, col = colDATA)
   rect(legendX + legendWidth + legendXSpace, legendY - legendHeight,
