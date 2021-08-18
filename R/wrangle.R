@@ -1,12 +1,14 @@
 ###################################################################################
-# This file contains functions to import and wrange the raw data coming out of the plate reader, and connecting it with the information in the spec files.
+# This file contains functions to import and wrangle the raw data coming out of the plate reader, and connecting it with the information in the spec files.
 ###################################################################################
 
 #' Import raw OD data from file
 #'
-#' @param fileName The name (including path) of the file. Currently supported file types are xlsx, csv and tsv.
+#' This function imports a single raw data file produced by a microplate reader. Currently supported are BioTek Synergy HT and Epoch plate readers.
 #'
-#' @return An untidy tibble in which each row represents one time point and each column represents one well, in addition to columns for date, plate reader model, time and temperature.
+#' @param fileName The name (including path) of the file. Supported file types are xlsx, csv and tsv.
+#'
+#' @return An (untidy) tibble in which each row represents one time point and each column represents one well, in addition to columns for date, plate reader model, time and temperature.
 #' @export
 #'
 importODFile <- function(fileName) {
@@ -17,7 +19,7 @@ importODFile <- function(fileName) {
   } else if (fileType=="tsv") {
     dat <- readr::read_tsv(fileName, col_names = FALSE)
   } else if (fileType=="xlsx") {
-    dat <- readxl::read_excel(fileName, col_names = FALSE, col_types = "text")
+    dat <- suppressMessages(readxl::read_excel(fileName, col_names = FALSE, col_types = "text"))
   } else {
     stop("File type not recognised, extension must be csv, tsv or xlsx.")
   }
@@ -40,7 +42,7 @@ importODFile <- function(fileName) {
   if (length(plateReaderRow) != 1) {
     stop("Couldn't impute plate reader from data file.")
   } else {
-    plateReader <- dat[plateReaderRow, 2]
+    plateReader <- dat[[2]][plateReaderRow]
   }
 
   # find start and end of data matrix:
@@ -57,7 +59,81 @@ importODFile <- function(fileName) {
   }
   processedDat[,-1] <- lapply(processedDat[,-1], as.double)
   names(processedDat) <- dat[matrixStartRow - 1, 2:(3 + 96)]
-  names(processedDat)[[2]] <- "Temperature"
+  names(processedDat)[c(1,2)] <- c("Time_min", "Temperature")
   processedDat <- processedDat %>%
     mutate(Date=plateDate, PlateReader=plateReader, .before = 1)
+  return(processedDat)
+}
+
+
+#' Import and process OD data
+#'
+#' \code{processODData} takes the path(s) of optical density (OD) data files and corresponding spec files, imports all those files, integrates spec and data files and returns a single, tidy table containing all the data.
+#'
+#' @param specPath The path of the spec files. Defaults to current working directory.
+#' @param dataPath The path of the data files. Defaults to current working directory.
+#' @param filePrefix The prefix of the data files. Defaults to "raw_", but this can be changed, including to "" when all files in the dataPath directory may be treated as potential data files.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+processODData <- function(specPath=".", dataPath=".", filePrefix = "raw_") {
+  specFileNames <- list.files(specPath)
+  specFileNames <- specFileNames[startsWith(specFileNames, "spec_") & endsWith(specFileNames, ".csv")]
+  if (length(specFileNames) == 0)
+    stop("No spec files found.")
+
+  dataFileNames <- list.files(dataPath)
+
+  allData <- data.frame() # create the allData frame before populating
+  for(i in 1:length(specFileNames)) {
+    fileName <- substr(specFileNames[i], 6, nchar(specFileNames[i]) - 4)
+    fileName <- paste0(filePrefix, fileName)
+    cat(paste0("Working on data file ", fileName, " ..."))
+    # check if corresponding data file is present:
+    if (paste0(fileName, ".csv") %in% dataFileNames) {
+      fileName <- paste0(fileName, ".csv")
+    } else if (paste0(fileName, ".tsv") %in% dataFileNames) {
+      fileName <- paste0(fileName, ".tsv")
+    } else if (paste0(fileName, ".xlsx") %in% dataFileNames) {
+      fileName <- paste0(fileName, ".xlsx")
+    } else {
+      fileName <- NA
+      cat("no data file found!\n")
+      warning("No data file corresponding to ", specFileNames[i], " found, was skipped.")
+    }
+
+    if (!is.na(fileName)) {
+      specs <- suppressMessages(read_csv(paste0(specPath, "/", specFileNames[i])))
+      trafoData <- importODFile(paste0(dataPath, "/", fileName)) %>%
+        pivot_longer(cols = A1:H12, names_to = "Well", values_to = "OD") %>%
+        left_join(specs, by = "Well") %>%
+        relocate(Plate, Replicate, Date, PlateReader, Row, Column, Well, WellType) %>%
+        relocate(Time_min, Temperature,  OD, .after = last_col())
+
+      if (all(names(allData)==names(trafoData))) {
+        allData <- rbind(allData, trafoData)
+        cat(paste0("Working on data file ", fileName, " ... done!\n"))
+      } else {
+        stop(paste0("Columns in ", specFileNames[i], " don't match with previous files."))
+      }
+    }
+  }
+  return(allData)
+}
+
+
+#' Blank optical density data
+#'
+#' \code{blankODs} takes a data file (tibble) of optical density (OD) data and, for each individual plate and time step, uses the average of wells designated as \code{wellType="BLANK"} to blank all the data cells (\code{wellType="BLANK"}).
+#'
+#' @param data A tibble containing OD data as produced by the function \code{processODdata}.
+#' @param group If specified, a column in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
+#'
+#' @return The original \code{data} tibble with an additional column \code{blankedOD}.
+#' @export
+#'
+blankODs <- function(data, group = NULL) {
+
 }
