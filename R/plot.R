@@ -1,3 +1,8 @@
+##################################################################################
+# This file contains functions for plotting spec files and plate reader output.
+##################################################################################
+
+
 #' Generate a pdf file with a plot of a plate design
 #'
 #' @param plateName Name of the plate.

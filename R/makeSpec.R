@@ -1,5 +1,6 @@
+############################################################################################
 # This file contains functions (currently just one) to automatically generate spec files.
-
+############################################################################################
 
 #' Generate a plate specification based on a full factorial design
 #'
