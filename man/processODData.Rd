@@ -14,8 +14,8 @@ processODData(specPath = ".", dataPath = ".", filePrefix = "raw_")
 \item{filePrefix}{The prefix of the data files. Defaults to "raw_", but this can be changed, including to "" when all files in the dataPath directory may be treated as potential data files.}
 }
 \value{
-
+A single, tidy tibble with complete data from all experiments and replicates.
 }
 \description{
-\code{processODData} takes the path(s) of optical density (OD) data files and corresponding spec files, imports all those files, integrates spec and data files and returns a single, tidy table containing all the data.
+\code{processODData} takes the path(s) of optical density (OD) data files and corresponding spec files, imports all those files, integrates spec and data files and returns a single, tidy tibble containing all the data.
 }

@@ -20,7 +20,7 @@
 #' @param replicates Number of replicate plate designs to generate. By default (value \code{NULL}), only a single plate design will be generated. When specified as an integer number, this number of spec files will be generated, and for each replicate number will appear in the file name as well as a column in the table.
 #' @param randomise Whether to randomise rows and/or columns. Possible values are \code{NULL} (no ramdomisation, the default), \code{'rows'}, \code{'columns'}, and \code{'both'}.
 #' @param constants Names and values of additional variables that are constant across the plate (see Details).
-#' @param path Path where to save the spec file(s).
+#' @param specPath Path where to save the spec file(s).
 #' @param makePlot Whether to produce a pdf file showing the plate design. Defaults to \code{TRUE}.
 #' @param plotPath Path where to save the spec plot file(s). Defaults to \code{path}.
 #'
@@ -197,7 +197,7 @@ makeSpec_fullFact <- function(plateName,
         specDF[names(constants)[i]] <- as.vector(vConstList[[i]])
 
     fileName <- paste0(specPath, "spec_", plateName, ".csv")
-    write.csv(specDF, fileName, row.names = FALSE)
+    readr::write_csv(specDF, fileName)
     print(paste0("Spec file ", fileName, " written."))
 
     if (makePlot) {
@@ -251,7 +251,7 @@ makeSpec_fullFact <- function(plateName,
           specDFs[[r]][names(constants)[i]] <- as.vector(vConstList[[i]])
 
       fileName <- paste0(specPath, "spec_", plateName, "_rep", r, ".csv")
-      write.csv(specDFs[[r]], fileName, row.names = FALSE)
+      readr::write_csv(specDFs[[r]], fileName)
       print(paste0("Spec file ", fileName, " written."))
 
       if (makePlot) {

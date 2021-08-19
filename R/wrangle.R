@@ -68,16 +68,16 @@ importODFile <- function(fileName) {
 
 #' Import and process OD data
 #'
-#' \code{processODData} takes the path(s) of optical density (OD) data files and corresponding spec files, imports all those files, integrates spec and data files and returns a single, tidy table containing all the data.
+#' \code{processODData} takes the path(s) of optical density (OD) data files and corresponding spec files, imports all those files, integrates spec and data files and returns a single, tidy tibble containing all the data.
 #'
 #' @param specPath The path of the spec files. Defaults to current working directory.
 #' @param dataPath The path of the data files. Defaults to current working directory.
 #' @param filePrefix The prefix of the data files. Defaults to "raw_", but this can be changed, including to "" when all files in the dataPath directory may be treated as potential data files.
 #'
-#' @return
+#' @return A single, tidy tibble with complete data from all experiments and replicates.
 #' @export
 #'
-#' @examples
+#' @importFrom magrittr %>%
 processODData <- function(specPath=".", dataPath=".", filePrefix = "raw_") {
   specFileNames <- list.files(specPath)
   specFileNames <- specFileNames[startsWith(specFileNames, "spec_") & endsWith(specFileNames, ".csv")]
@@ -105,12 +105,12 @@ processODData <- function(specPath=".", dataPath=".", filePrefix = "raw_") {
     }
 
     if (!is.na(fileName)) {
-      specs <- suppressMessages(read_csv(paste0(specPath, "/", specFileNames[i])))
+      specs <- suppressMessages(readr::read_csv(paste0(specPath, "/", specFileNames[i])))
       trafoData <- importODFile(paste0(dataPath, "/", fileName)) %>%
-        pivot_longer(cols = A1:H12, names_to = "Well", values_to = "OD") %>%
-        left_join(specs, by = "Well") %>%
-        relocate(Plate, Replicate, Date, PlateReader, Row, Column, Well, WellType) %>%
-        relocate(Time_min, Temperature,  OD, .after = last_col())
+        tidyr::pivot_longer(cols = A1:H12, names_to = "Well", values_to = "OD") %>%
+        dplyr::left_join(specs, by = "Well") %>%
+        dplyr::relocate(Plate, Replicate, Date, PlateReader, Row, Column, Well, WellType) %>%
+        dplyr::relocate(Time_min, Temperature,  OD, .after = last_col())
 
       if (all(names(allData)==names(trafoData))) {
         allData <- rbind(allData, trafoData)
@@ -129,7 +129,7 @@ processODData <- function(specPath=".", dataPath=".", filePrefix = "raw_") {
 #' \code{blankODs} takes a data file (tibble) of optical density (OD) data and, for each individual plate and time step, uses the average of wells designated as \code{wellType="BLANK"} to blank all the data cells (\code{wellType="BLANK"}).
 #'
 #' @param data A tibble containing OD data as produced by the function \code{processODdata}.
-#' @param group If specified, a column in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
+#' @param groups If specified, a column in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
 #'
 #' @return The original \code{data} tibble with an additional column \code{blankedOD}.
 #' @export
@@ -137,13 +137,13 @@ processODData <- function(specPath=".", dataPath=".", filePrefix = "raw_") {
 blankODs <- function(data, groups = NULL) {
   groups <- c("Plate", "Replicate", "Time_min", groups)
   blankMeans <- data %>%
-    filter(WellType == "BLANK") %>%
-    group_by_at(groups) %>%
-    summarise(meanBlankOD = mean(OD))
+    dplyr::filter(WellType == "BLANK") %>%
+    dplyr::group_by_at(groups) %>%
+    dplyr::summarise(meanBlankOD = mean(OD))
 
   blankedData <- data %>%
-    left_join(blankMeans, groups) %>%
-    mutate(blankedOD = OD - meanBlankOD) %>%
-    select(-meanBlankOD)
+    dplyr::left_join(blankMeans, groups) %>%
+    dplyr::mutate(blankedOD = OD - meanBlankOD) %>%
+    dplyr::select(-meanBlankOD)
   return(blankedData)
 }

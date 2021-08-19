@@ -53,11 +53,11 @@ makeSpec_fullFact(
 
 \item{randomise}{Whether to randomise rows and/or columns. Possible values are \code{NULL} (no ramdomisation, the default), \code{'rows'}, \code{'columns'}, and \code{'both'}.}
 
+\item{specPath}{Path where to save the spec file(s).}
+
 \item{makePlot}{Whether to produce a pdf file showing the plate design. Defaults to \code{TRUE}.}
 
 \item{plotPath}{Path where to save the spec plot file(s). Defaults to \code{path}.}
-
-\item{path}{Path where to save the spec file(s).}
 }
 \description{
 \code{makeSpec_fullFact} produces "spec-files": csv files containing tables that assign values of two (or more) variables to each well on a 96-well plate. The design used is one where one variable varies across rows and another across column, in a full factorial design.
