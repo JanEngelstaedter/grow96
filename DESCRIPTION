@@ -4,7 +4,7 @@ Title: Importing, Wrangling and Analysing Optical Density Data
 Version: 0.1.0
 Authors@R: c(person("Jan", "Engelstaedter", email = "j.engelstaedter@uq.edu.au",
   role = c("aut", "cre")), person("Ian", "Gooi", email = "i.gooi@uq.net.au",
-  role = c("aut"))
+  role = c("aut")))
 Description: This package is intended to 1) generate files that link wells in a 96-well plate to variables of interest, 2) import optical density (OD) data files, 3) wrangle these files so that the OD data (dependent variable) gets linked to the independent variables, 3) invoke functions from other packages to analyse the data, e.g. estimating maximum growth rates, and 4) plot the results.
 License: GPL-2 | file LICENSE
 Encoding: UTF-8
