@@ -198,13 +198,13 @@ makeSpec_fullFact <- function(plateName,
 
     fileName <- paste0(specPath, "spec_", plateName, ".csv")
     readr::write_csv(specDF, fileName)
-    print(paste0("Spec file ", fileName, " written."))
+    cat(paste0("Spec file ", fileName, " written.\n"))
 
     if (makePlot) {
       fileName <- paste0(plotPath, "specplot_", plateName, ".pdf")
       specPlot_fullFact(plateName, NULL, vWellType,
                na.omit(vVarRow[,2]), na.omit(vVarColumn[2,]), border, fileName)
-      print(paste0("Spec plot file ", fileName, " written."))
+      cat(paste0("Spec plot file ", fileName, " written.\n"))
     }
 
   } else {   # several replicates should be created
@@ -252,13 +252,13 @@ makeSpec_fullFact <- function(plateName,
 
       fileName <- paste0(specPath, "spec_", plateName, "_rep", r, ".csv")
       readr::write_csv(specDFs[[r]], fileName)
-      print(paste0("Spec file ", fileName, " written."))
+      cat(paste0("Spec file ", fileName, " written.\n"))
 
       if (makePlot) {
         fileName <- paste0(plotPath, "specplot_", plateName, "_rep", r, ".pdf")
         specPlot_fullFact(plateName, r, vWellTypeRep,
                  na.omit(vVarRowRep[,2]), na.omit(vVarColumnRep[2,]), border, fileName)
-        print(paste0("Spec plot file ", fileName, " written."))
+        cat(paste0("Spec plot file ", fileName, " written.\n"))
       }
     }
   }
