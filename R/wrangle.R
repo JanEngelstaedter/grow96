@@ -134,6 +134,16 @@ processODData <- function(specPath=".", dataPath=".", filePrefix = "raw_") {
 #' @return The original \code{data} tibble with an additional column \code{blankedOD}.
 #' @export
 #'
-blankODs <- function(data, group = NULL) {
+blankODs <- function(data, groups = NULL) {
+  groups <- c("Plate", "Replicate", "Time_min", groups)
+  blankMeans <- data %>%
+    filter(WellType == "BLANK") %>%
+    group_by_at(groups) %>%
+    summarise(meanBlankOD = mean(OD))
 
+  blankedData <- data %>%
+    left_join(blankMeans, groups) %>%
+    mutate(blankedOD = OD - meanBlankOD) %>%
+    select(-meanBlankOD)
+  return(blankedData)
 }

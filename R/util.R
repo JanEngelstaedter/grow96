@@ -9,7 +9,7 @@ fileExtension <- function (fileName)
 
 
 nameFromSpecFileName <- function(specFileName) {
-  name <- substr(specFileName, 6,
+  name <- substr(specFileNames[i], 6, nchar(specFileNames[i]) - 4)
   substr(name, 1, 5) <- "?"
   substr(name, nchar(name) - 3, nchar(name)) <- ""
   return(name)
