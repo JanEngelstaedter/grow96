@@ -61,7 +61,7 @@ importODFile <- function(fileName) {
   names(processedDat) <- dat[matrixStartRow - 1, 2:(3 + 96)]
   names(processedDat)[c(1,2)] <- c("Time_min", "Temperature")
   processedDat <- processedDat %>%
-    mutate(Date=plateDate, PlateReader=plateReader, .before = 1)
+    dplyr::mutate(Date=plateDate, PlateReader=plateReader, .before = 1)
   return(processedDat)
 }
 
