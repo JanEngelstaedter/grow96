@@ -9,7 +9,6 @@
 #' @param fileName The name (including path) of the file. Supported file types are xlsx, csv and tsv.
 #'
 #' @return An (untidy) tibble in which each row represents one time point and each column represents one well, in addition to columns for date, plate reader model, time and temperature.
-#' @export
 #'
 importODFile <- function(fileName) {
   # import entire file:
@@ -66,6 +65,32 @@ importODFile <- function(fileName) {
 }
 
 
+
+#' Blank optical density data
+#'
+#' \code{blankODs} takes a data file (tibble) of optical density (OD) data and, for each individual plate and time step, uses the average of wells designated as \code{wellType="BLANK"} to blank all the data cells (\code{wellType="BLANK"}).
+#'
+#' @param data A tibble containing OD data as produced by the function \code{processODdata}.
+#' @param groups If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
+#'
+#' @return The original \code{data} tibble with an additional column \code{blankedOD}.
+#'
+blankODs <- function(data, groups = NULL) {
+  groups <- c("Plate", "Replicate", "Time_min", groups)
+  blankMeans <- data %>%
+    dplyr::filter(WellType == "BLANK") %>%
+    dplyr::group_by_at(groups) %>%
+    dplyr::summarise(meanBlankOD = mean(OD))
+
+  blankedData <- data %>%
+    dplyr::left_join(blankMeans, groups) %>%
+    dplyr::mutate(blankedOD = OD - meanBlankOD) %>%
+    dplyr::select(-meanBlankOD)
+  return(blankedData)
+}
+
+
+
 #' Import and process OD data
 #'
 #' \code{processODData} takes the path(s) of optical density (OD) data files and corresponding spec files, imports all those files, integrates spec and data files and returns a single, tidy tibble containing all the data.
@@ -73,12 +98,17 @@ importODFile <- function(fileName) {
 #' @param specPath The path of the spec files. Defaults to current working directory.
 #' @param dataPath The path of the data files. Defaults to current working directory.
 #' @param filePrefix The prefix of the data files. Defaults to "raw_", but this can be changed, including to "" when all files in the dataPath directory may be treated as potential data files.
+#' @param blankGroups If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
+
 #'
 #' @return A single, tidy tibble with complete data from all experiments and replicates.
 #' @export
 #'
 #' @importFrom magrittr %>%
-processODData <- function(specPath=".", dataPath=".", filePrefix = "raw_") {
+processODData <- function(specPath=".",
+                          dataPath=".",
+                          filePrefix = "raw_",
+                          blankGroups = NULL) {
   specFileNames <- list.files(specPath)
   specFileNames <- specFileNames[startsWith(specFileNames, "spec_") & endsWith(specFileNames, ".csv")]
   if (length(specFileNames) == 0)
@@ -120,30 +150,9 @@ processODData <- function(specPath=".", dataPath=".", filePrefix = "raw_") {
       }
     }
   }
+  cat("Blanking ODs ...")
+  allData <- blankODs(allData, groups = blankGroups)
+  cat("Blanking ODs ... done!\n")
   return(allData)
 }
 
-
-#' Blank optical density data
-#'
-#' \code{blankODs} takes a data file (tibble) of optical density (OD) data and, for each individual plate and time step, uses the average of wells designated as \code{wellType="BLANK"} to blank all the data cells (\code{wellType="BLANK"}).
-#'
-#' @param data A tibble containing OD data as produced by the function \code{processODdata}.
-#' @param groups If specified, a column in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
-#'
-#' @return The original \code{data} tibble with an additional column \code{blankedOD}.
-#' @export
-#'
-blankODs <- function(data, groups = NULL) {
-  groups <- c("Plate", "Replicate", "Time_min", groups)
-  blankMeans <- data %>%
-    dplyr::filter(WellType == "BLANK") %>%
-    dplyr::group_by_at(groups) %>%
-    dplyr::summarise(meanBlankOD = mean(OD))
-
-  blankedData <- data %>%
-    dplyr::left_join(blankMeans, groups) %>%
-    dplyr::mutate(blankedOD = OD - meanBlankOD) %>%
-    dplyr::select(-meanBlankOD)
-  return(blankedData)
-}

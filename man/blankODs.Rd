@@ -9,7 +9,7 @@ blankODs(data, groups = NULL)
 \arguments{
 \item{data}{A tibble containing OD data as produced by the function \code{processODdata}.}
 
-\item{groups}{If specified, a column in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.}
+\item{groups}{If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.}
 }
 \value{
 The original \code{data} tibble with an additional column \code{blankedOD}.

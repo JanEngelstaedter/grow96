@@ -4,7 +4,12 @@
 \alias{processODData}
 \title{Import and process OD data}
 \usage{
-processODData(specPath = ".", dataPath = ".", filePrefix = "raw_")
+processODData(
+  specPath = ".",
+  dataPath = ".",
+  filePrefix = "raw_",
+  blankGroups = NULL
+)
 }
 \arguments{
 \item{specPath}{The path of the spec files. Defaults to current working directory.}
@@ -12,6 +17,8 @@ processODData(specPath = ".", dataPath = ".", filePrefix = "raw_")
 \item{dataPath}{The path of the data files. Defaults to current working directory.}
 
 \item{filePrefix}{The prefix of the data files. Defaults to "raw_", but this can be changed, including to "" when all files in the dataPath directory may be treated as potential data files.}
+
+\item{blankGroups}{If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.}
 }
 \value{
 A single, tidy tibble with complete data from all experiments and replicates.
