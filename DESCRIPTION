@@ -14,6 +14,7 @@ Imports:
     dplyr,
     graphics,
     grDevices,
+    growthrates,
     magrittr,
     readxl,
     readr,

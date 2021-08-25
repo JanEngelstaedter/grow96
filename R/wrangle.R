@@ -152,7 +152,7 @@ processODData <- function(specPath=".",
   }
   cat("Blanking ODs ...")
   allData <- blankODs(allData, groups = blankGroups)
-  cat("done!\n")
+  cat(" done!\n")
   return(allData)
 }
 

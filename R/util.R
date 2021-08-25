@@ -14,3 +14,11 @@ nameFromSpecFileName <- function(specFileName) {
   substr(name, nchar(name) - 3, nchar(name)) <- ""
   return(name)
 }
+
+# standard error:
+se <- function(x, na.rm=FALSE) {
+  if (na.rm) x <- na.omit(x)
+  return(sqrt(var(x)/length(x)))
+}
+
+nNonNAs <- function(x) sum(!is.na(x))
