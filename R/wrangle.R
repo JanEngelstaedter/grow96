@@ -105,10 +105,19 @@ blankODs <- function(data, groups = NULL) {
 #' @export
 #'
 #' @importFrom magrittr %>%
-processODData <- function(specPath=".",
-                          dataPath=".",
+processODData <- function(specPath='.',
+                          dataPath='.',
                           filePrefix = "raw_",
                           blankGroups = NULL) {
+
+  # make sure the two paths exist and are properly defined:
+  specPath <- fixPathName(specPath)
+  dataPath <- fixPathName(dataPath)
+  if (!dir.exists(specPath))
+    stop(paste0("Couldn't find directory ", specPath, " for spec files."))
+  if (!dir.exists(dataPath))
+    stop(paste0("Couldn't find directory ", dataPath, " for data files."))
+
   specFileNames <- list.files(specPath)
   specFileNames <- specFileNames[startsWith(specFileNames, "spec_") & endsWith(specFileNames, ".csv")]
   if (length(specFileNames) == 0)

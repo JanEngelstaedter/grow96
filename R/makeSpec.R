@@ -70,7 +70,7 @@ makeSpec_fullFact <- function(plateName,
                               replicates = NULL,
                               constants = NULL,
                               randomise = NULL,
-                              specPath = NULL,
+                              specPath = '.',
                               makePlot = TRUE,
                               plotPath = specPath) {
 
@@ -94,6 +94,18 @@ makeSpec_fullFact <- function(plateName,
     stop("Unexpected value for 'border' argument: must be 'EMPTY' or 'BLANK'.")
   if (!is.null(randomise) && !(randomise %in% c("rows", "columns", "both")))
     stop("Unexpected value for 'randomise' argument: must be 'rows', 'columns' or 'both'.")
+
+  # check paths:
+  specPath <- fixPathName(specPath)
+  plotPath <- fixPathName(plotPath)
+  if(!dir.exists(specPath)) {
+    dir.create(specPath)
+    warning(paste0("The directory ", specPath, " for the spec files didn't exist but has now been created."))
+  }
+  if(makePlot & !dir.exists(plotPath)) {
+    dir.create(plotPath)
+    warning(paste0("The directory ", plotPath, " for the plots didn't exist but has now been created."))
+  }
 
   # columns with row, column and well labels:
   vRow <- rep(LETTERS[1:nrowsTotal], ncolsTotal)
