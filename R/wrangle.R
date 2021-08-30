@@ -129,7 +129,7 @@ processODData <- function(specPath='.',
   for(i in 1:length(specFileNames)) {
     fileName <- substr(specFileNames[i], 6, nchar(specFileNames[i]) - 4)
     fileName <- paste0(filePrefix, fileName)
-    cat(paste0("Working on data file ", fileName, " ..."))
+    cat(paste0("Working on data file ", fileName, "..."))
     # check if corresponding data file is present:
     if (paste0(fileName, ".csv") %in% dataFileNames) {
       fileName <- paste0(fileName, ".csv")
@@ -151,9 +151,11 @@ processODData <- function(specPath='.',
         dplyr::relocate(Plate, Replicate, Date, PlateReader, Row, Column, Well, WellType) %>%
         dplyr::relocate(Time_min, Temperature,  OD, .after = last_col())
 
+      if (!any(trafoData$WellType == 'BLANK'))
+        warning(paste0("No wells designated as blanks in file ", fileName, "."))
       if (all(names(allData)==names(trafoData))) {
         allData <- rbind(allData, trafoData)
-        cat(paste0("Working on data file ", fileName, " ... done!\n"))
+        cat(paste0("Working on data file ", fileName, "... done!\n"))
       } else {
         stop(paste0("Columns in ", specFileNames[i], " don't match with previous files."))
       }

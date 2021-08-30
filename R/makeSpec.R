@@ -102,7 +102,7 @@ makeSpec_fullFact <- function(plateName,
     dir.create(specPath)
     warning(paste0("The directory ", specPath, " for the spec files didn't exist but has now been created."))
   }
-  if(makePlot & !dir.exists(plotPath)) {
+  if(makePlot & (!dir.exists(plotPath))) {
     dir.create(plotPath)
     warning(paste0("The directory ", plotPath, " for the plots didn't exist but has now been created."))
   }
@@ -215,7 +215,7 @@ makeSpec_fullFact <- function(plateName,
     if (makePlot) {
       fileName <- paste0(plotPath, "specplot_", plateName, ".pdf")
       specPlot_fullFact(plateName, NULL, vWellType,
-               na.omit(vVarRow[,2]), na.omit(vVarColumn[2,]), border, fileName)
+               stats::na.omit(vVarRow[,2]), stats::na.omit(vVarColumn[2,]), border, fileName)
       cat(paste0("Spec plot file ", fileName, " written.\n"))
     }
 
@@ -268,8 +268,13 @@ makeSpec_fullFact <- function(plateName,
 
       if (makePlot) {
         fileName <- paste0(plotPath, "specplot_", plateName, "_rep", r, ".pdf")
-        specPlot_fullFact(plateName, r, vWellTypeRep,
-                 na.omit(vVarRowRep[,2]), na.omit(vVarColumnRep[2,]), border, fileName)
+        specPlot_fullFact(plateName,
+                          r,
+                          vWellTypeRep,
+                          stats::na.omit(vVarRowRep[,2]),
+                          stats::na.omit(vVarColumnRep[2,]),
+                          border,
+                          fileName)
         cat(paste0("Spec plot file ", fileName, " written.\n"))
       }
     }

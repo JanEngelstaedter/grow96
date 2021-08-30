@@ -13,7 +13,7 @@ getGrowthParameters(times, ODs, method = "easylinear", ...)
 
 \item{method}{Currently, only the default value "easylinear" is supported}
 
-\item{...}{}
+\item{...}{Further arguments to be passed on to the method used}
 }
 \value{
 A vector of estimated growth parameters

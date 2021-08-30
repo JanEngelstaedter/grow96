@@ -33,8 +33,8 @@ nameFromSpecFileName <- function(specFileName) {
 
 # standard error:
 se <- function(x, na.rm=FALSE) {
-  if (na.rm) x <- na.omit(x)
-  return(sqrt(var(x)/length(x)))
+  if (na.rm) x <- stats::na.omit(x)
+  return(sqrt(stats::var(x)/length(x)))
 }
 
 # count how many non-NA values a vector has:

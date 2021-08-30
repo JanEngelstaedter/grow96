@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyse.R
 \name{analyseODData}
 \alias{analyseODData}
-\title{Title}
+\title{Analyse a dataset of OD reads through time}
 \usage{
 analyseODData(
   data,
@@ -14,11 +14,31 @@ analyseODData(
 )
 }
 \arguments{
-\item{...}{}
+\item{data}{The data in tidy format, as produced by the function \code{processODData}}
+
+\item{method}{Method to be used to analyse the OD data. Currently, the only supported method is "easylinear",
+which calls the fit_easylinear function from the growthrates package (Petzold 2020).}
+
+\item{tmin}{Time point from which onwards the OD data should be analysed. Defaults to \code{0}.}
+
+\item{tmax}{Time point up to which the OD data should be analysed. Defaults to \code{Inf}.}
+
+\item{r2Threshold}{Threshold of r2 (variance explained) for model fitting. If the model fitted
+(e.g., linear function fitted to log(OD)) explains less variance than specified in this way,
+the parameters estimated from this fit will not be discarded and NAs reported instead.}
+
+\item{...}{Other parameters that may be passed on to the methods function.}
 }
 \value{
-
+A list of five data frames. The first data frame contains the estimated parameters for
+each OD-through-time dataset. The other four data frames contain the following summary statistics
+across replicate experiments: mean, standard deviations, standard errors of the means, and number of replicate
+data points included in each summary statistic.
 }
 \description{
-Title
+Analyse a dataset of OD reads through time
+}
+\references{
+Thomas Petzoldt (2020). growthrates: Estimate Growth Rates from Experimental Data. R package version
+0.8.2. https://CRAN.R-project.org/package=growthrates
 }

@@ -19,7 +19,7 @@ makeSpec_fullFact(
   replicates = NULL,
   constants = NULL,
   randomise = NULL,
-  specPath = NULL,
+  specPath = ".",
   makePlot = TRUE,
   plotPath = specPath
 )

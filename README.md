@@ -1,6 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<!-- badges: start -->
+
+[![R build
+status](https://github.com/JanEngelstaedter/grow96/workflows/R-CMD-check/badge.svg)](https://github.com/JanEngelstaedter/grow96/actions)
+<!-- badges: end -->
+
 # grow96
 
 This R package was written to facilitate the import, wrangling and
