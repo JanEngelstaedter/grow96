@@ -15,3 +15,4 @@ An (untidy) tibble in which each row represents one time point and each column r
 \description{
 This function imports a single raw data file produced by a microplate reader. Currently supported are BioTek Synergy HT and Epoch plate readers.
 }
+\keyword{internal}

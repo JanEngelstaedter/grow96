@@ -13,6 +13,8 @@
 #' @param border Type of border
 #' @param fileName File name of for the pdf (including path)
 #'
+#'@keywords internal
+#'
 specPlot_fullFact <- function(plateName,
                               replicate,
                               vWellType,

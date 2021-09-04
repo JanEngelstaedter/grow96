@@ -3,4 +3,5 @@
 export(analyseODData)
 export(makeSpec_fullFact)
 export(processODData)
+export(qcODData)
 importFrom(magrittr,"%>%")

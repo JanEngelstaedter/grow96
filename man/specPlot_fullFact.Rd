@@ -32,3 +32,4 @@ specPlot_fullFact(
 \description{
 Generate a pdf file with a plot of a plate design
 }
+\keyword{internal}

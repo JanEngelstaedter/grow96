@@ -17,3 +17,4 @@ The original \code{data} tibble with an additional column \code{blankedOD}.
 \description{
 \code{blankODs} takes a data file (tibble) of optical density (OD) data and, for each individual plate and time step, uses the average of wells designated as \code{wellType="BLANK"} to blank all the data cells (\code{wellType="BLANK"}).
 }
+\keyword{internal}

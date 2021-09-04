@@ -10,6 +10,8 @@
 #'
 #' @return An (untidy) tibble in which each row represents one time point and each column represents one well, in addition to columns for date, plate reader model, time and temperature.
 #'
+#' @keywords internal
+#'
 importODFile <- function(fileName) {
   # import entire file:
   fileType <- fileExtension(fileName)
@@ -44,6 +46,14 @@ importODFile <- function(fileName) {
     plateReader <- dat[[2]][plateReaderRow]
   }
 
+  # find setpoint temperature:
+  setTRow <- which(dat[,1] == "Set Temperature")
+  if (length(setTRow) != 1) {
+    stop("Couldn't impute set temperature from data file.")
+  } else {
+    setT <- readr::parse_number(dat[[2]][setTRow])
+  }
+
   # find start and end of data matrix:
   matrixStartRow <- which(dat[,2] == "Time")[1] + 1  # first occurrence of "Time" keyword
   matrixEndRow <- which(is.na(dat[matrixStartRow:nrow(dat),2]) |
@@ -60,7 +70,7 @@ importODFile <- function(fileName) {
   names(processedDat) <- dat[matrixStartRow - 1, 2:(3 + 96)]
   names(processedDat)[c(1,2)] <- c("Time_min", "Temperature")
   processedDat <- processedDat %>%
-    dplyr::mutate(Date=plateDate, PlateReader=plateReader, .before = 1)
+    dplyr::mutate(Date=plateDate, PlateReader=plateReader, SetTemperature=setT, .before = 1)
   return(processedDat)
 }
 
@@ -75,12 +85,14 @@ importODFile <- function(fileName) {
 #'
 #' @return The original \code{data} tibble with an additional column \code{blankedOD}.
 #'
+#' @keywords internal
+#'
 blankODs <- function(data, groups = NULL) {
   groups <- c("Plate", "Replicate", "Time_min", groups)
   blankMeans <- data %>%
     dplyr::filter(WellType == "BLANK") %>%
     dplyr::group_by_at(groups) %>%
-    dplyr::summarise(meanBlankOD = mean(OD))
+    dplyr::summarise(meanBlankOD = mean(OD), .groups = "drop")
 
   blankedData <- data %>%
     dplyr::left_join(blankMeans, groups) %>%
@@ -148,7 +160,7 @@ processODData <- function(specPath='.',
       trafoData <- importODFile(paste0(dataPath, "/", fileName)) %>%
         tidyr::pivot_longer(cols = A1:H12, names_to = "Well", values_to = "OD") %>%
         dplyr::left_join(specs, by = "Well") %>%
-        dplyr::relocate(Plate, Replicate, Date, PlateReader, Row, Column, Well, WellType) %>%
+        dplyr::relocate(Plate, Replicate, Date, PlateReader, SetTemperature, Row, Column, Well, WellType) %>%
         dplyr::relocate(Time_min, Temperature,  OD, .after = last_col())
 
       if (!any(trafoData$WellType == 'BLANK'))
