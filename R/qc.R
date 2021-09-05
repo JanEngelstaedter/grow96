@@ -132,6 +132,10 @@ qcBlanks <- function(data, blankGroups = NULL) {
 #'
 qcODData <- function(data, blankGroups = NULL, path = '.', silent = TRUE) {
   path <- fixPathName(path)
+  if(!dir.exists(path)) {
+    dir.create(path)
+    warning(paste0("The directory ", path, " for the quality control output didn't exist but has now been created."))
+  }
   qcT <- qcTemperature(data)
   qcB <- qcBlanks(data, blankGroups)
   grDevices::pdf(paste0(path,"/qc.pdf"), paper = "a4")
