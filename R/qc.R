@@ -125,15 +125,16 @@ qcBlanks <- function(data, blankGroups = NULL) {
 #' @param blankGroups If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
 #'
 #' @param path The path where to save the pdf report. Defaults to the current working directory.
+#' @param silent If \code{TRUE} (the default), the function won't return anything. If set to \code{FALSE}, the function will return the complete quality control analysis.
 #'
-#' @return A list containing various statistics and plots for quality control.
+#' @return Either NULL or a list containing all quality control summary statistics and plots, depending on the argument \code{silent}.
 #' @export
 #'
-qcODData <- function(data, blankGroups = NULL, path = '.') {
+qcODData <- function(data, blankGroups = NULL, path = '.', silent = TRUE) {
   path <- fixPathName(path)
   qcT <- qcTemperature(data)
   qcB <- qcBlanks(data, blankGroups)
-  grDevices::pdf(paste0(path,"/qc.pdf", paper = "a4"))
+  grDevices::pdf(paste0(path,"/qc.pdf"), paper = "a4")
   projectName <- strsplit(getwd(), "/")[[1]]
   projectName <- projectName[length(projectName)]
   titleText <- paste0("Quality control report for project ", projectName)
@@ -174,5 +175,9 @@ qcODData <- function(data, blankGroups = NULL, path = '.') {
     print(cowplot::plot_grid(title, plots, rel_heights = c(0.2, 1), nrow = 2))
   }
   grDevices::dev.off()
-  return(list(qcTemperature = qcT, qcBlanks = qcB))
+  if (silent) {
+    return(invisible(NULL))
+  } else {
+    return(list(qcTemperature = qcT, qcBlanks = qcB))
+  }
 }

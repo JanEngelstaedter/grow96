@@ -4,7 +4,7 @@
 \alias{qcODData}
 \title{Perform quality control on OD data set}
 \usage{
-qcODData(data, blankGroups = NULL, path = ".")
+qcODData(data, blankGroups = NULL, path = ".", silent = TRUE)
 }
 \arguments{
 \item{data}{The data set, as produced by processODData}
@@ -12,9 +12,11 @@ qcODData(data, blankGroups = NULL, path = ".")
 \item{blankGroups}{If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.}
 
 \item{path}{The path where to save the pdf report. Defaults to the current working directory.}
+
+\item{silent}{If \code{TRUE} (the default), the function won't return anything. If set to \code{FALSE}, the function will return the complete quality control analysis.}
 }
 \value{
-A list containing various statistics and plots for quality control.
+Either NULL or a list containing all quality control summary statistics and plots, depending on the argument \code{silent}.
 }
 \description{
 This function performs a quality control analysis of an OD dataset,
