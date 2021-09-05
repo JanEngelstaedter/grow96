@@ -12,7 +12,7 @@ qcBlanks(data, blankGroups = NULL)
 \item{blankGroups}{If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.}
 }
 \value{
-A list of two elements: a summary table and a list of plots for each plate
+A list of two elements: a summary table and a list of plots for each plate. If there are no blanks at all in the data set, \code{NULL} is returned.
 }
 \description{
 Obtain quality control data and plots on blank wells

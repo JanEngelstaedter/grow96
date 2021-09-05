@@ -58,7 +58,7 @@ qcTemperature <- function(data) {
 #' @param data The data set, as produced by processODData
 #' @param blankGroups If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
 #'
-#' @return A list of two elements: a summary table and a list of plots for each plate
+#' @return A list of two elements: a summary table and a list of plots for each plate. If there are no blanks at all in the data set, \code{NULL} is returned.
 #'
 #' @keywords internal
 #'
@@ -67,12 +67,16 @@ qcBlanks <- function(data, blankGroups = NULL) {
     dplyr::filter(WellType == "BLANK") %>%
     dplyr::select(c("Plate", "Replicate", "Well", all_of(blankGroups), "Time_min", "OD"))
 
+  if (nrow(blankODs) == 0) { # no blanks in dataset at all!
+    return(NULL)
+  }
+
   blankODMeans <- blankODs %>%
-    dplyr::group_by(across(c("Plate", "Replicate", blankGroups, "Time_min"))) %>%
+    dplyr::group_by(across(c("Plate", "Replicate", all_of(blankGroups), "Time_min"))) %>%
     dplyr::summarise(meanOD = mean(OD), .groups = "drop")
 
   blankODSummary <- blankODMeans %>%
-    dplyr::group_by(across(c("Plate", "Replicate", blankGroups))) %>%
+    dplyr::group_by(across(c("Plate", "Replicate", all_of(blankGroups)))) %>%
     dplyr::summarise(maxChange = max(abs(meanOD - dplyr::first(meanOD))),
                      mean = min(meanOD),
                      var = stats::var(meanOD),
@@ -156,26 +160,36 @@ qcODData <- function(data, blankGroups = NULL, path = '.', silent = TRUE) {
     ggplot2::theme_bw()
 
   # blanking summary plot:
-  summaryPlotB <- ggplot2::ggplot(qcB$summary) +
-    ggplot2::geom_errorbar(ggplot2::aes(x = Replicate, ymin = mean-se, ymax = mean+se), position = "dodge") +
-    ggplot2::geom_point(ggplot2::aes(x = Replicate, y = mean)) +
-    ggplot2::facet_wrap(facet = ggplot2::vars(Plate),
-                        nrow = 1 + nrow(qcT$summary) %/% 16) +
-    ggplot2::labs(x = "Replicate", y = "OD", colour = "") +
-    ggplot2::ggtitle("OD for blank wells") +
-    ggplot2::theme_bw()
+  if (is.null(qcB)) {
+    summaryPlotB <- cowplot::ggdraw() +
+      cowplot::draw_label("No blanks in data set!", fontface='bold', size = 24)
+  } else {
+    summaryPlotB <- ggplot2::ggplot(qcB$summary) +
+      ggplot2::geom_errorbar(ggplot2::aes(x = Replicate, ymin = mean-se, ymax = mean+se), position = "dodge") +
+      ggplot2::geom_point(ggplot2::aes(x = Replicate, y = mean)) +
+      ggplot2::facet_wrap(facet = ggplot2::vars(Plate),
+                          nrow = 1 + nrow(qcT$summary) %/% 16) +
+      ggplot2::labs(x = "Replicate", y = "OD", colour = "") +
+      ggplot2::ggtitle("OD for blank wells") +
+      ggplot2::theme_bw()
+  }
   # print summary page:
   plots <- cowplot::plot_grid(summaryPlotT, summaryPlotB, nrow = 2)
   print(cowplot::plot_grid(title, subtitle, plots, rel_heights = c(0.1, 0.2, 1), nrow = 3))
   # individual plots
   for(i in 1:(length(qcT$individual))) {
+    titleText <- paste0("Plate ", qcT$individual[[i]]$plate,
+                        ", replicate ", qcT$individual[[i]]$replicate)
+    title <- cowplot::ggdraw() + cowplot::draw_label(titleText, fontface='bold', size = 24)
     legendT <- cowplot::get_legend(qcT$individual[[i]]$plot)
     plotT <- qcT$individual[[i]]$plot + ggplot2::theme(legend.position = "none")
-    legendB <- cowplot::get_legend(qcB$individual[[i]]$plot)
-    plotB <- qcB$individual[[i]]$plot + ggplot2::theme(legend.position = "none")
-    plots <- cowplot::plot_grid(plotT, legendT, plotB, legendB, rel_widths = c(1, .3), nrow = 2)
-    titleText <- paste0("Plate ", qcT$individual[[i]]$plate, ", replicate ", qcT$individual[[i]]$replicate)
-    title <- cowplot::ggdraw() + cowplot::draw_label(titleText, fontface='bold', size = 24)
+    if (is.null(qcB)) {
+      plots <- cowplot::plot_grid(plotT, legendT, rel_widths = c(1, .3), nrow = 1)
+    } else {
+      legendB <- cowplot::get_legend(qcB$individual[[i]]$plot)
+      plotB <- qcB$individual[[i]]$plot + ggplot2::theme(legend.position = "none")
+      plots <- cowplot::plot_grid(plotT, legendT, plotB, legendB, rel_widths = c(1, .3), nrow = 2)
+    }
     print(cowplot::plot_grid(title, plots, rel_heights = c(0.2, 1), nrow = 2))
   }
   grDevices::dev.off()
