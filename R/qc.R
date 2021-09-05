@@ -10,7 +10,7 @@
 #'@keywords internal
 #'
 qcTemperature <- function(data) {
-
+  cat("Running quality control analyses...")
   temp <- data %>%
     dplyr::filter(Well == "A1") %>% # T is the same for all wells, so just pick one here
     dplyr::select(Plate, Replicate, SetTemperature, Time_min, Temperature)
@@ -175,7 +175,7 @@ qcODData <- function(data, blankGroups = NULL, path = '.', silent = TRUE) {
     print(cowplot::plot_grid(title, plots, rel_heights = c(0.2, 1), nrow = 2))
   }
   grDevices::dev.off()
-  cat(paste0("Quality control report saved in file ", path, "/qc.pdf", "."))
+  cat(paste0("done!\nQuality control report saved in file ", path, "/qc.pdf", ".\n"))
   if (silent) {
     return(invisible(NULL))
   } else {
