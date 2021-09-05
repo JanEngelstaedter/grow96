@@ -76,19 +76,19 @@ In addition to the main output, the spec file(s), the \code{makeSpec_fullFact} f
 \examples{
 
 # simple example:
-makeSpec_fullFact(plateName = "Example1",
-                  rowName = "concRIF", columnName = "concSTP",
-                  rows = 0:7, columns = 0:11)
+#makeSpec_fullFact(plateName = "Example1",
+#                  rowName = "concRIF", columnName = "concSTP",
+#                  rows = 0:7, columns = 0:11)
 
 # more complex design:
-makeSpec_fullFact(plateName = "Example2",
-                  rowName = "Drug",
-                  columnName = "Strain",
-                  rows = c("STP", "RIF", "TMP", "KAN", "CIP", "NONE"),
-                  columns = paste0("Strain", LETTERS[1:10]),
-                  border = "EMPTY",
-                  blankRows = 7,
-                  replicates = 3,
-                  randomise = "rows")
+# makeSpec_fullFact(plateName = "Example2",
+#                   rowName = "Drug",
+#                   columnName = "Strain",
+#                   rows = c("STP", "RIF", "TMP", "KAN", "CIP", "NONE"),
+#                   columns = paste0("Strain", LETTERS[1:10]),
+#                   border = "EMPTY",
+#                   blankRows = 7,
+#                   replicates = 3,
+#                   randomise = "rows")
 
 }

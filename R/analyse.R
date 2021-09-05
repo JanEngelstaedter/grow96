@@ -89,23 +89,23 @@ analyseODData <- function(data,
   # discarding estimates with poor fit:
   if (method == "easylinear") {
     growthParams %>%
-      dyplr::mutate(mumax = ifelse(r2<r2Threshold, NA, mumax)) %>%
-      dyplr::mutate(lag = ifelse(r2<r2Threshold, NA, lag))
+      dplyr::mutate(mumax = ifelse(r2<r2Threshold, NA, mumax)) %>%
+      dplyr::mutate(lag = ifelse(r2<r2Threshold, NA, lag))
   }
 
   cat("Summarising growth parameters ...\n")
   growthParamMeans <- growthParams %>%
-    dplyr::group_by(dyplr::across(variableNames)) %>%
-    dyplr::summarise(dyplr::across(names(gps), mean, na.rm = TRUE), .groups = 'drop')
+    dplyr::group_by(dplyr::across(variableNames)) %>%
+    dplyr::summarise(dplyr::across(names(gps), mean, na.rm = TRUE), .groups = 'drop')
   growthParamSDs <- growthParams %>%
-    dplyr::group_by(dyplr::across(variableNames)) %>%
-    dyplr::summarise(dyplr::across(names(gps), stats::sd, na.rm = TRUE), .groups = 'drop')
+    dplyr::group_by(dplyr::across(variableNames)) %>%
+    dplyr::summarise(dplyr::across(names(gps), stats::sd, na.rm = TRUE), .groups = 'drop')
   growthParamSEs <- growthParams %>%
-    dplyr::group_by(dyplr::across(variableNames)) %>%
-    dyplr::summarise(dyplr::across(names(gps), se, na.rm = TRUE), .groups = 'drop')
+    dplyr::group_by(dplyr::across(variableNames)) %>%
+    dplyr::summarise(dplyr::across(names(gps), se, na.rm = TRUE), .groups = 'drop')
   growthParamN <- growthParams %>%
-    dplyr::group_by(dyplr::across(variableNames)) %>%
-    summarise(across(names(gps), nNonNAs), .groups = 'drop')
+    dplyr::group_by(dplyr::across(variableNames)) %>%
+    dplyr::summarise(dplyr::across(names(gps), nNonNAs), .groups = 'drop')
   return(list(pars = growthParams,
               means = growthParamMeans,
               SDs = growthParamSDs,
