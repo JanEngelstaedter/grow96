@@ -21,3 +21,4 @@ A vector of estimated growth parameters
 \description{
 Estimate growth parameters for a single vector of OD measurements
 }
+\keyword{internal}

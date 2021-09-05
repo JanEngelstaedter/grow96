@@ -8,6 +8,8 @@
 #'
 #' @return A vector of estimated growth parameters
 #'
+#' @keywords internal
+#'
 getGrowthParameters <- function(times, ODs, method = "easylinear", ...) {
   if (method == "easylinear") {
     fit <- tryCatch(growthrates::fit_easylinear(times, ODs, ...),

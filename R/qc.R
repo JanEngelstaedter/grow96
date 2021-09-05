@@ -130,9 +130,10 @@ qcBlanks <- function(data, blankGroups = NULL) {
 #' @export
 #'
 qcODData <- function(data, blankGroups = NULL, path = '.') {
+  path <- fixPathName(path)
   qcT <- qcTemperature(data)
   qcB <- qcBlanks(data, blankGroups)
-  grDevices::pdf("test.pdf", paper = "a4")
+  grDevices::pdf(paste0(path,"/qc.pdf", paper = "a4"))
   projectName <- strsplit(getwd(), "/")[[1]]
   projectName <- projectName[length(projectName)]
   titleText <- paste0("Quality control report for project ", projectName)

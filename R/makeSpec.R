@@ -208,12 +208,12 @@ makeSpec_fullFact <- function(plateName,
       for(i in 1:length(constants))
         specDF[names(constants)[i]] <- as.vector(vConstList[[i]])
 
-    fileName <- paste0(specPath, "spec_", plateName, ".csv")
+    fileName <- paste0(specPath, "/spec_", plateName, ".csv")
     readr::write_csv(specDF, fileName)
     cat(paste0("Spec file ", fileName, " written.\n"))
 
     if (makePlot) {
-      fileName <- paste0(plotPath, "specplot_", plateName, ".pdf")
+      fileName <- paste0(plotPath, "/specplot_", plateName, ".pdf")
       specPlot_fullFact(plateName, NULL, vWellType,
                stats::na.omit(vVarRow[,2]), stats::na.omit(vVarColumn[2,]), border, fileName)
       cat(paste0("Spec plot file ", fileName, " written.\n"))
@@ -262,12 +262,12 @@ makeSpec_fullFact <- function(plateName,
         for(i in 1:length(constants))
           specDFs[[r]][names(constants)[i]] <- as.vector(vConstList[[i]])
 
-      fileName <- paste0(specPath, "spec_", plateName, "_rep", r, ".csv")
+      fileName <- paste0(specPath, "/spec_", plateName, "_rep", r, ".csv")
       readr::write_csv(specDFs[[r]], fileName)
       cat(paste0("Spec file ", fileName, " written.\n"))
 
       if (makePlot) {
-        fileName <- paste0(plotPath, "specplot_", plateName, "_rep", r, ".pdf")
+        fileName <- paste0(plotPath, "/specplot_", plateName, "_rep", r, ".pdf")
         specPlot_fullFact(plateName,
                           r,
                           vWellTypeRep,
