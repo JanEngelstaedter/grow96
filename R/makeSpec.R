@@ -174,109 +174,76 @@ makeSpec_fullFact <- function(plateName,
   }
 
   if (is.null(replicates)) { # no replicates
-    if (!is.null(randomise)) { # shuffling of rows or columns
+    reps <- 1
+  } else {
+    reps <- replicates
+  }
+  specDFs <- vector(mode = "list", length = reps)
+  for(r in 1:reps) {
+    vWellTypeRep <- vWellType
+    vVarRowRep <- vVarRow
+    vVarColumnRep <- vVarColumn
+
+    # shuffling if randomisation is requested:
+    if (!is.null(randomise)) {
       if (randomise %in% c("rows", "both")) {
         if (is.null(border))
           rowPerm <- sample(1:nrowsTotal, nrowsTotal)
         else
           rowPerm <- c(1, sample(2:(nrowsTotal-1), nrowsTotal-2), nrowsTotal)
-        vWellType <- vWellType[rowPerm,]
-        vVarRow <- vVarRow[rowPerm,]
+        vWellTypeRep <- vWellTypeRep[rowPerm,]
+        vVarRowRep <- vVarRowRep[rowPerm,]
       }
       if (randomise %in% c("columns", "both")) {
         if (is.null(border))
           colPerm <- sample(1:ncolsTotal, ncolsTotal)
         else
           colPerm <- c(1, sample(2:(ncolsTotal-1), ncolsTotal-2), ncolsTotal)
-        vWellType <- vWellType[, colPerm]
-        vVarColumn <- vVarColumn[, colPerm]
+        vWellTypeRep <- vWellTypeRep[, colPerm]
+        vVarColumnRep <- vVarColumnRep[, colPerm]
       }
     }
 
-    specDF <- data.frame(Plate = rep(plateName, nrowsTotal * ncolsTotal),
-                         Row = vRow,
-                         Column = vColumn,
-                         Well = vWell,
-                         WellType = as.vector(vWellType),
-                         VarRow = as.vector(vVarRow),
-                         VarCol = as.vector(vVarColumn))
-    names(specDF)[names(specDF) == "VarRow"] <- rowName
-    names(specDF)[names(specDF) == "VarCol"] <- columnName
+    specDFs[[r]] <- data.frame(Plate = rep(plateName, nrowsTotal * ncolsTotal),
+                               Replicate = r,
+                               Row = vRow,
+                               Column = vColumn,
+                               Well = vWell,
+                               WellType = as.vector(vWellTypeRep),
+                               VarRow = as.vector(vVarRowRep),
+                               VarCol = as.vector(vVarColumnRep))
+    names(specDFs[[r]])[names(specDFs[[r]]) == "VarRow"] <- rowName
+    names(specDFs[[r]])[names(specDFs[[r]]) == "VarCol"] <- columnName
 
     # add constant columns:
     if (!is.null(constants))
       for(i in 1:length(constants))
-        specDF[names(constants)[i]] <- as.vector(vConstList[[i]])
+        specDFs[[r]][names(constants)[i]] <- as.vector(vConstList[[i]])
 
-    fileName <- paste0(specPath, "/spec_", plateName, ".csv")
-    readr::write_csv(specDF, fileName)
+    if (is.null(replicates)) {
+      fileName <- paste0(specPath, "/spec_", plateName, ".csv")
+    } else {
+      fileName <- paste0(specPath, "/spec_", plateName, "_rep", r, ".csv")
+    }
+    readr::write_csv(specDFs[[r]], fileName)
     cat(paste0("Spec file ", fileName, " written.\n"))
 
     if (makePlot) {
-      fileName <- paste0(plotPath, "/specplot_", plateName, ".pdf")
-      specPlot_fullFact(plateName, NULL, vWellType,
-               stats::na.omit(vVarRow[,2]), stats::na.omit(vVarColumn[2,]), border, fileName)
-      cat(paste0("Spec plot file ", fileName, " written.\n"))
-    }
-
-  } else {   # several replicates should be created
-    specDFs <- vector(mode = "list", length = replicates)
-    for(r in 1:replicates) {
-      vWellTypeRep <- vWellType
-      vVarRowRep <- vVarRow
-      vVarColumnRep <- vVarColumn
-
-      # shuffling if randomisation is requested:
-      if (!is.null(randomise)) {
-        if (randomise %in% c("rows", "both")) {
-          if (is.null(border))
-            rowPerm <- sample(1:nrowsTotal, nrowsTotal)
-          else
-            rowPerm <- c(1, sample(2:(nrowsTotal-1), nrowsTotal-2), nrowsTotal)
-          vWellTypeRep <- vWellTypeRep[rowPerm,]
-          vVarRowRep <- vVarRowRep[rowPerm,]
-        }
-        if (randomise %in% c("columns", "both")) {
-          if (is.null(border))
-            colPerm <- sample(1:ncolsTotal, ncolsTotal)
-          else
-            colPerm <- c(1, sample(2:(ncolsTotal-1), ncolsTotal-2), ncolsTotal)
-          vWellTypeRep <- vWellTypeRep[, colPerm]
-          vVarColumnRep <- vVarColumnRep[, colPerm]
-        }
-      }
-
-      specDFs[[r]] <- data.frame(Plate = rep(plateName, nrowsTotal * ncolsTotal),
-                                   Replicate = r,
-                                   Row = vRow,
-                                   Column = vColumn,
-                                   Well = vWell,
-                                   WellType = as.vector(vWellTypeRep),
-                                   VarRow = as.vector(vVarRowRep),
-                                   VarCol = as.vector(vVarColumnRep))
-      names(specDFs[[r]])[names(specDFs[[r]]) == "VarRow"] <- rowName
-      names(specDFs[[r]])[names(specDFs[[r]]) == "VarCol"] <- columnName
-
-      # add constant columns:
-      if (!is.null(constants))
-        for(i in 1:length(constants))
-          specDFs[[r]][names(constants)[i]] <- as.vector(vConstList[[i]])
-
-      fileName <- paste0(specPath, "/spec_", plateName, "_rep", r, ".csv")
-      readr::write_csv(specDFs[[r]], fileName)
-      cat(paste0("Spec file ", fileName, " written.\n"))
-
-      if (makePlot) {
+      if (is.null(replicates)) {
+        fileName <- paste0(plotPath, "/specplot_", plateName, ".pdf")
+        repPlot <- NULL
+      } else {
         fileName <- paste0(plotPath, "/specplot_", plateName, "_rep", r, ".pdf")
-        specPlot_fullFact(plateName,
-                          r,
-                          vWellTypeRep,
-                          stats::na.omit(vVarRowRep[,2]),
-                          stats::na.omit(vVarColumnRep[2,]),
-                          border,
-                          fileName)
-        cat(paste0("Spec plot file ", fileName, " written.\n"))
+        repPlot <- r
       }
+      specPlot_fullFact(plateName,
+                        repPlot,
+                        vWellTypeRep,
+                        stats::na.omit(vVarRowRep[,2]),
+                        stats::na.omit(vVarColumnRep[2,]),
+                        border,
+                        fileName)
+      cat(paste0("Spec plot file ", fileName, " written.\n"))
     }
   }
   return(invisible(NULL))
