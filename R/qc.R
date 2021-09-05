@@ -175,6 +175,7 @@ qcODData <- function(data, blankGroups = NULL, path = '.', silent = TRUE) {
     print(cowplot::plot_grid(title, plots, rel_heights = c(0.2, 1), nrow = 2))
   }
   grDevices::dev.off()
+  cat(paste0("Quality control report saved in file ", path, "/qc.pdf", "."))
   if (silent) {
     return(invisible(NULL))
   } else {
