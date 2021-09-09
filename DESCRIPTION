@@ -21,5 +21,6 @@ Imports:
     readxl,
     readr,
     stats,
+    tibble,
     tidyr
     

@@ -16,11 +16,20 @@ importODFile <- function(fileName) {
   # import entire file:
   fileType <- fileExtension(fileName)
   if (fileType=="csv") {
-    dat <- readr::read_csv(fileName, col_names = FALSE)
-  } else if (fileType=="tsv") {
-    dat <- readr::read_tsv(fileName, col_names = FALSE)
+    #dat <- readr::read_csv(fileName, col_names = FALSE)
+    dat <- tibble::as_tibble(utils::read.csv(fileName,
+                                             header = FALSE,
+                                             col.names = paste0("V", 1:500)))
+  } else if (fileType=="tsv" || fileType=="txt") {
+    # couldn't get the readr function to work:    :(
+    #dat <- readr::read_tsv(fileName, col_names = paste0("V", 1:100))
+    dat <- tibble::as_tibble(utils::read.delim(fileName,
+                                               header = FALSE,
+                                               col.names = paste0("V", 1:500)))
   } else if (fileType=="xlsx") {
-    dat <- suppressMessages(readxl::read_excel(fileName, col_names = FALSE, col_types = "text"))
+    dat <- suppressMessages(readxl::read_excel(fileName,
+                                               col_names = FALSE,
+                                               col_types = "text"))
   } else {
     stop("File type not recognised, extension must be csv, tsv or xlsx.")
   }
@@ -35,7 +44,6 @@ importODFile <- function(fileName) {
       plateDate <- as.Date.numeric(plateDate, origin = "1899-12-30")
     } else {
       plateDate <- dat[dateRow, 2]
-      plateDate <- as.Date.character(plateDate, origin = "1970-01-01")
     }
   }
   # find plate reader:
@@ -55,19 +63,27 @@ importODFile <- function(fileName) {
   }
 
   # find start and end of data matrix:
-  matrixStartRow <- which(dat[,2] == "Time")[1] + 1  # first occurrence of "Time" keyword
-  matrixEndRow <- which(is.na(dat[matrixStartRow:nrow(dat),2]) |
-                          dat[matrixStartRow:nrow(dat),2]== "")[1] + matrixStartRow - 2
+  matrixStartCol <- 0
+  matrixStartRow <- NA
+  while(is.na(matrixStartRow)) {
+    matrixStartCol <- matrixStartCol + 1
+    matrixStartRow <- which(dat[15:nrow(dat), matrixStartCol] == "Time")[1] + 15
+  }
+
+  matrixEndRow <- which(is.na(dat[matrixStartRow:nrow(dat), matrixStartCol]) |
+                        dat[matrixStartRow:nrow(dat), matrixStartCol] == "" |
+                        dat[matrixStartRow:nrow(dat), matrixStartCol] == "Results")[1] + matrixStartRow - 2
 
   # constructing final imported data frame:
-  processedDat <- dat[matrixStartRow:matrixEndRow, 2:(3 + 96)]
+  processedDat <- dat[matrixStartRow:matrixEndRow, matrixStartCol:(matrixStartCol + 97)]
   if(fileType == "xlsx") {
     processedDat[,1] <- 24*60*as.double(dplyr::pull(processedDat,1))  # convert from day to minutes
   } else {
-    processedDat[,1] <- as.POSIXct(processedDat[,1],format="%H:%M:%S")
+    processedDat[,1] <- as.difftime(dplyr::pull(processedDat, 1), units = "mins")
   }
   processedDat[,-1] <- lapply(processedDat[,-1], as.double)
-  names(processedDat) <- dat[matrixStartRow - 1, 2:(3 + 96)]
+  names(processedDat) <- dat[matrixStartRow - 1, matrixStartCol:(matrixStartCol + 97)] %>%
+    as.character()
   names(processedDat)[c(1,2)] <- c("Time_min", "Temperature")
   processedDat <- processedDat %>%
     dplyr::mutate(Date=plateDate, PlateReader=plateReader, SetTemperature=setT, .before = 1)
