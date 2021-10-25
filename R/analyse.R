@@ -77,7 +77,7 @@ analyseODData <- function(data,
       dplyr::filter(Plate == growthParams$Plate[i] &
                Replicate == growthParams$Replicate[i] &
                Well == growthParams$Well[i])
-    gps <- getGrowthParameters(dataSubset$Time_min, dataSubset$blankedOD)
+    gps <- getGrowthParameters(dataSubset$Time_min, dataSubset$blankedOD, ...)
     growthParams[i, names(gps)] <- gps
     progressPercent <- floor(i/nrow(growthParams)*20)
     cat('\r', paste0(c("0% [", rep("|", progressPercent), rep(" ", 20-progressPercent), "] 100%"), collapse = ""))
