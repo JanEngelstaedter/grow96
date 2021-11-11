@@ -2,6 +2,8 @@
 
 export(analyseODData)
 export(makeSpec_fullFact)
+export(plotODs)
 export(processODData)
 export(qcODData)
+export(shinyPlate)
 importFrom(magrittr,"%>%")

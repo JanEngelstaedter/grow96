@@ -20,7 +20,10 @@ Imports:
     magrittr,
     readxl,
     readr,
+    scales,
     stats,
     tibble,
     tidyr
-    
+Suggests:
+    shiny,
+    wesanderson

@@ -93,3 +93,104 @@ specPlot_fullFact <- function(plateName,
        "EMPTY", adj = c(0.5, 0.5))
   grDevices::dev.off()
 }
+
+
+#' Plot OD data through time
+#'
+#' This function produces a plot where OD through time is shown for each well of a 96-well plate.
+#'
+#' @param data The data to be plotted, as produced by the \code{processODData} function.
+#' @param replicates A vector indicating which replicates should be plotted.
+#' @param blanked A boolean value indicating whether the blanked OD should be plotted or not.
+#' @param border A boolean value indicating whether or not to include the plate border (rows A and H, columns 1 and 12) in the plot.
+#' @param smallScreen If \code{TRUE}, many of the details in the plot (legend, axes labels etc.) will be omitted so as to fit all the data on a small screen.
+#'
+#' @return A ggplot object.
+#' @export
+#'
+plotODs <- function(data,
+                    replicates = NULL,
+                    blanked = TRUE,
+                    border = TRUE,
+                    smallScreen = FALSE) {
+  if (!border)
+    data <- data %>%
+      dplyr::filter(!(Row %in% c("A", "H")) & !(Column %in% c(1, 12)))
+  if (blanked)
+    data <- data %>%
+      dplyr::mutate(OD = blankedOD)
+  if (!is.null(replicates)) {
+    data <- data %>%
+      dplyr::filter(Replicate %in% replicates)
+  } else {
+    replicates <- sort(unique(data$Replicate))
+  }
+  # try to use Wes Anderson colours if package is available, otherwise default ggplot colours:
+  if (length(suppressWarnings(find.package('wesanderson', quiet = TRUE, verbose = FALSE))) > 0) {
+    colours <- wesanderson::wes_palettes[["Darjeeling1"]][replicates]
+  } else {
+    colours <- scales::hue_pal()(length(replicates))[replicates]
+  }
+  p <- ggplot2::ggplot(data) +
+    ggplot2::geom_line(ggplot2::aes(Time_min, OD, col = as.factor(Replicate))) +
+    ggplot2::facet_grid(rows = ggplot2::vars(Row), cols = dplyr::vars(Column)) +
+    ggplot2::labs(x = "Time [min]", y = "OD600") +
+    ggplot2::theme_bw() +
+    ggplot2::scale_colour_manual(name = "Replicate",
+                                 values = colours) +
+    ggplot2::theme(legend.position = "top")
+
+  if (smallScreen)
+    p <- p +
+    ggplot2::scale_x_continuous(breaks = NULL) +
+    ggplot2::scale_y_continuous(breaks = NULL) +
+    ggplot2::theme(legend.position = "none", panel.spacing = grid::unit(0, "cm"),
+                   axis.title.x=element_blank(), axis.title.y=element_blank(),
+                   axis.text.x=element_blank(), axis.text.y=element_blank(),
+                   axis.ticks.x=element_blank(), axis.ticks.y=element_blank())
+  return(p)
+}
+
+
+
+#' A shiny app to explore OD data from a 96-well plate.
+#'
+#' This shiny app lets you choose replicates and a number of options to plot OD data through time for each well of a 96-well plate.
+#'
+#' @param data The data to be plotted, as produced by the \code{processODData} function.
+#'
+#' @return Starts a shiny app.
+#' @export
+#'
+shinyPlate <- function(data) {
+
+  replicates <- sort(unique(data$Replicate))
+
+  ui<-shiny::fluidPage(
+    shiny::sidebarLayout(
+      shiny::sidebarPanel(
+        shiny::checkboxGroupInput("Replicates", "Reps:", choices = replicates, selected = replicates),
+        shiny::checkboxGroupInput("Options", "Options:", choices = c("blanked", "border", "small"), selected = c("blanked", "border")),
+        width = 2
+      ),
+      shiny::mainPanel(shiny::plotOutput(outputId = "main_plot", height = "600px"), width = 10)
+    )
+  )
+
+  # shiny server function:
+
+  server<-function(input, output, session) {
+    output$main_plot <- shiny::renderPlot({
+      selectedReps <- as.integer(input$Replicates)
+      plotODs(data,
+              replicates <- selectedReps,
+              blanked = "blanked" %in% input$Options,
+              border = "border" %in% input$Options,
+              smallScreen = "small" %in% input$Options)
+    })
+  }
+
+  return(shiny::shinyApp(ui = ui, server = server))
+}
+
+
