@@ -1,7 +1,7 @@
 Package: grow96
 Type: Package
 Title: Importing, Wrangling and Analysing Optical Density Data
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(person("Jan", "Engelstaedter", email = "j.engelstaedter@uq.edu.au",
   role = c("aut", "cre")), person("Ian", "Gooi", email = "i.gooi@uq.net.au",
   role = c("aut")))

@@ -175,9 +175,10 @@ processODData <- function(specPath='.',
       specs <- suppressMessages(readr::read_csv(paste0(specPath, "/", specFileNames[i])))
       trafoData <- importODFile(paste0(dataPath, "/", fileName)) %>%
         tidyr::pivot_longer(cols = A1:H12, names_to = "Well", values_to = "OD") %>%
+        dplyr::mutate(Time_h = Time_min / 60) %>%
         dplyr::left_join(specs, by = "Well") %>%
         dplyr::relocate(Plate, Replicate, Date, PlateReader, SetTemperature, Row, Column, Well, WellType) %>%
-        dplyr::relocate(Time_min, Temperature,  OD, .after = last_col())
+        dplyr::relocate(Time_min, Time_h, Temperature,  OD, .after = last_col())
 
       if (!any(trafoData$WellType == 'BLANK'))
         warning(paste0("No wells designated as blanks in file ", fileName, "."))

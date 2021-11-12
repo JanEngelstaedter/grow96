@@ -103,6 +103,7 @@ specPlot_fullFact <- function(plateName,
 #' @param replicates A vector indicating which replicates should be plotted.
 #' @param blanked A boolean value indicating whether the blanked OD should be plotted or not.
 #' @param border A boolean value indicating whether or not to include the plate border (rows A and H, columns 1 and 12) in the plot.
+#' @param hours A boolean value indicating whether time should be plotted in hours or minutes.
 #' @param smallScreen If \code{TRUE}, many of the details in the plot (legend, axes labels etc.) will be omitted so as to fit all the data on a small screen.
 #'
 #' @return A ggplot object.
@@ -112,6 +113,7 @@ plotODs <- function(data,
                     replicates = NULL,
                     blanked = TRUE,
                     border = TRUE,
+                    hours = TRUE,
                     smallScreen = FALSE) {
   if (!border)
     data <- data %>%
@@ -125,6 +127,14 @@ plotODs <- function(data,
   } else {
     replicates <- sort(unique(data$Replicate))
   }
+  if (hours) {
+    data <- data %>% mutate(Time = Time_h)
+    xLabel <- "Time [h]"
+  } else {
+    data <- data %>% mutate(Time = Time_min)
+    xLabel <- "Time [min]"
+  }
+
   # try to use Wes Anderson colours if package is available, otherwise default ggplot colours:
   if (length(suppressWarnings(find.package('wesanderson', quiet = TRUE, verbose = FALSE))) > 0) {
     colours <- wesanderson::wes_palettes[["Darjeeling1"]][replicates]
@@ -132,9 +142,9 @@ plotODs <- function(data,
     colours <- scales::hue_pal()(length(replicates))[replicates]
   }
   p <- ggplot2::ggplot(data) +
-    ggplot2::geom_line(ggplot2::aes(Time_min, OD, col = as.factor(Replicate))) +
+    ggplot2::geom_line(ggplot2::aes(Time, OD, col = as.factor(Replicate))) +
     ggplot2::facet_grid(rows = ggplot2::vars(Row), cols = dplyr::vars(Column)) +
-    ggplot2::labs(x = "Time [min]", y = "OD600") +
+    ggplot2::labs(x = xLabel, y = "OD600") +
     ggplot2::theme_bw() +
     ggplot2::scale_colour_manual(name = "Replicate",
                                  values = colours) +
@@ -170,7 +180,7 @@ shinyPlate <- function(data) {
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         shiny::checkboxGroupInput("Replicates", "Reps:", choices = replicates, selected = replicates),
-        shiny::checkboxGroupInput("Options", "Options:", choices = c("blanked", "border", "small"), selected = c("blanked", "border")),
+        shiny::checkboxGroupInput("Options", "Options:", choices = c("blanked", "border", "hours", "small"), selected = c("blanked", "border", "hours")),
         width = 2
       ),
       shiny::mainPanel(shiny::plotOutput(outputId = "main_plot", height = "600px"), width = 10)
@@ -186,6 +196,7 @@ shinyPlate <- function(data) {
               replicates <- selectedReps,
               blanked = "blanked" %in% input$Options,
               border = "border" %in% input$Options,
+              hours = "hours" %in% input$Options,
               smallScreen = "small" %in% input$Options)
     })
   }

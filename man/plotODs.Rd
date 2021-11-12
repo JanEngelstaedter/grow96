@@ -9,6 +9,7 @@ plotODs(
   replicates = NULL,
   blanked = TRUE,
   border = TRUE,
+  hours = TRUE,
   smallScreen = FALSE
 )
 }
@@ -20,6 +21,8 @@ plotODs(
 \item{blanked}{A boolean value indicating whether the blanked OD should be plotted or not.}
 
 \item{border}{A boolean value indicating whether or not to include the plate border (rows A and H, columns 1 and 12) in the plot.}
+
+\item{hours}{A boolean value indicating whether time should be plotted in hours or minutes.}
 
 \item{smallScreen}{If \code{TRUE}, many of the details in the plot (legend, axes labels etc.) will be omitted so as to fit all the data on a small screen.}
 }
