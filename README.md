@@ -1,6 +1,5 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <!-- badges: start -->
 
 [![R build
@@ -29,8 +28,14 @@ devtools::install_github("JanEngelstaedter/grow96")
 
 ## Use
 
+Load the pacakge like any other R package:
+
+``` r
+library(grow96)
+```
+
 Currently, the package provides four functions for subsequent steps in a
-standard workflow. First, we can define a “spec-file” that specifies
+standard work flow. First, we can define a “spec-file” that specifies
 variables for rows and columns of a 96-well plate. For example, if we
 want to have 8 strains across the rows (“strainA” through “strainH”) and
 12 drug concentrations (0 to 0.55) across the columns, we could specify
@@ -69,6 +74,12 @@ qcODData(data, path = "qc")
 This will generate a pdf file in the folder “qc” containing information
 about temperature fluctuations through time as well as OD data from
 blank wells.
+
+We can also plot the data in an interactive shiny app:
+
+``` r
+shinyPlate(data)
+```
 
 Finally, we can analyse the data in order to extract statistics such as
 the maximum growth rate and the maximum OD, and to summarise the
