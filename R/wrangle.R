@@ -43,7 +43,7 @@ importODFile <- function(fileName) {
       plateDate <- as.integer(dat[dateRow, 2])
       plateDate <- as.Date.numeric(plateDate, origin = "1899-12-30")
     } else {
-      plateDate <- dat[dateRow, 2]
+      plateDate <- dat[[2]][dateRow]
     }
   }
   # find plate reader:
@@ -81,7 +81,7 @@ importODFile <- function(fileName) {
   } else {
     processedDat[,1] <- as.difftime(dplyr::pull(processedDat, 1), units = "mins")
   }
-  processedDat[,-1] <- lapply(processedDat[,-1], as.double)
+  processedDat <- dplyr::mutate_all(processedDat, as.double)
   names(processedDat) <- dat[matrixStartRow - 1, matrixStartCol:(matrixStartCol + 97)] %>%
     as.character()
   names(processedDat)[c(1,2)] <- c("Time_min", "Temperature")
