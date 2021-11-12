@@ -100,6 +100,7 @@ specPlot_fullFact <- function(plateName,
 #' This function produces a plot where OD through time is shown for each well of a 96-well plate.
 #'
 #' @param data The data to be plotted, as produced by the \code{processODData} function.
+#' @param plate A character vector of length 1 indicating which of the (potentially several) plates within the data set should be plotted.
 #' @param replicates A vector indicating which replicates should be plotted.
 #' @param blanked A boolean value indicating whether the blanked OD should be plotted or not.
 #' @param border A boolean value indicating whether or not to include the plate border (rows A and H, columns 1 and 12) in the plot.
@@ -110,11 +111,15 @@ specPlot_fullFact <- function(plateName,
 #' @export
 #'
 plotODs <- function(data,
+                    plate,
                     replicates = NULL,
                     blanked = TRUE,
                     border = TRUE,
                     hours = TRUE,
                     smallScreen = FALSE) {
+  data <- filter(data, Plate == plate)
+  if (nrow(data) == 0)
+    stop("No data available with the plate ID specified.")
   if (!border)
     data <- data %>%
       dplyr::filter(!(Row %in% c("A", "H")) & !(Column %in% c(1, 12)))
@@ -179,6 +184,7 @@ shinyPlate <- function(data) {
   ui<-shiny::fluidPage(
     shiny::sidebarLayout(
       shiny::sidebarPanel(
+        shiny::radioButtons("Plate", "Plate ID:", choices = unique(data$Plate)),
         shiny::checkboxGroupInput("Replicates", "Reps:", choices = replicates, selected = replicates),
         shiny::checkboxGroupInput("Options", "Options:", choices = c("blanked", "border", "hours", "small"), selected = c("blanked", "border", "hours")),
         width = 2
@@ -193,7 +199,8 @@ shinyPlate <- function(data) {
     output$main_plot <- shiny::renderPlot({
       selectedReps <- as.integer(input$Replicates)
       plotODs(data,
-              replicates <- selectedReps,
+              plate = input$Plate,
+              replicates = selectedReps,
               blanked = "blanked" %in% input$Options,
               border = "border" %in% input$Options,
               hours = "hours" %in% input$Options,

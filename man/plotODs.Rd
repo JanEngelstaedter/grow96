@@ -6,6 +6,7 @@
 \usage{
 plotODs(
   data,
+  plate,
   replicates = NULL,
   blanked = TRUE,
   border = TRUE,
@@ -15,6 +16,8 @@ plotODs(
 }
 \arguments{
 \item{data}{The data to be plotted, as produced by the \code{processODData} function.}
+
+\item{plate}{A character vector of length 1 indicating which of the (potentially several) plates within the data set should be plotted.}
 
 \item{replicates}{A vector indicating which replicates should be plotted.}
 
