@@ -173,7 +173,7 @@ processODData <- function(specPath='.',
 
     if (!is.na(fileName)) {
       specs <- suppressMessages(readr::read_csv(paste0(specPath, "/", specFileNames[i]),
-                                                col_types = "character"))
+                                                col_types = "c"))
       trafoData <- importODFile(paste0(dataPath, "/", fileName)) %>%
         tidyr::pivot_longer(cols = A1:H12, names_to = "Well", values_to = "OD") %>%
         dplyr::mutate(Time_h = Time_min / 60) %>%
