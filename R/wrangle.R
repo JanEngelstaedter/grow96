@@ -117,7 +117,7 @@ blankODs <- function(data, groups = NULL, method = "perTimePoint", tukeyK = NULL
       dplyr::left_join(blankMeans, groups) %>%
       dplyr::mutate(blankedOD = OD - meanBlankOD) %>%
       dplyr::select(-meanBlankOD)
-  } else if (method = "averageOverTime") {
+  } else if (method == "averageOverTime") {
     groups <- c("Plate", "Replicate", groups)
     blankMeans <- data %>%
       dplyr::filter(WellType == "BLANK") %>%

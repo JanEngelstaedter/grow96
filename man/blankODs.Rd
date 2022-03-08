@@ -4,12 +4,16 @@
 \alias{blankODs}
 \title{Blank optical density data}
 \usage{
-blankODs(data, groups = NULL)
+blankODs(data, groups = NULL, method = "perTimePoint", tukeyK = NULL)
 }
 \arguments{
 \item{data}{A tibble containing OD data as produced by the function \code{processODdata}.}
 
 \item{groups}{If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.}
+
+\item{method}{Currently, two methods are implemented. When code{method} = "perTimePoint" (the default), blanking on a per-time-point basis, i.e. at each time point, the mean of the BLANK well is subtracted from the respective wells to be blanked. When code{method} = "averageOverTime", OD of BLANK wells is averaged across all time points, and then subtracted from ODs at all time points. Note that with this latter method, any trend in OD in in the BLANK wells will lead to spurious results because this trend will be averaged out.}
+
+\item{tukeyK}{When averaging OD of BLANK wells (across wells and/or across time), outliers may be excluded. Here, Tukey's fences method is used, excluding all OD values that are more than tukeyK times the interquartile range away from the upper and lower quartile, respectively. When kTukey is NULL (the default), no outliers will be excluded.}
 }
 \value{
 The original \code{data} tibble with an additional column \code{blankedOD}.
