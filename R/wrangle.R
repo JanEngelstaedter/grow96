@@ -98,22 +98,39 @@ importODFile <- function(fileName) {
 #'
 #' @param data A tibble containing OD data as produced by the function \code{processODdata}.
 #' @param groups If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
+#' @param method Currently, two methods are implemented. When code{method} = "perTimePoint" (the default), blanking on a per-time-point basis, i.e. at each time point, the mean of the BLANK well is subtracted from the respective wells to be blanked. When code{method} = "averageOverTime", OD of BLANK wells is averaged across all time points, and then subtracted from ODs at all time points. Note that with this latter method, any trend in OD in in the BLANK wells will lead to spurious results because this trend will be averaged out.
+#' @param tukeyK When averaging OD of BLANK wells (across wells and/or across time), outliers may be excluded. Here, Tukey's fences method is used, excluding all OD values that are more than tukeyK times the interquartile range away from the upper and lower quartile, respectively. When kTukey is NULL (the default), no outliers will be excluded.
 #'
 #' @return The original \code{data} tibble with an additional column \code{blankedOD}.
 #'
 #' @keywords internal
 #'
-blankODs <- function(data, groups = NULL) {
-  groups <- c("Plate", "Replicate", "Time_min", groups)
-  blankMeans <- data %>%
-    dplyr::filter(WellType == "BLANK") %>%
-    dplyr::group_by_at(groups) %>%
-    dplyr::summarise(meanBlankOD = mean(OD), .groups = "drop")
+blankODs <- function(data, groups = NULL, method = "perTimePoint", tukeyK = NULL) {
+  if (method == "perTimePoint") {  # subtract mean OD from BLANK wells at each time point
+    groups <- c("Plate", "Replicate", "Time_min", groups)
+    blankMeans <- data %>%
+      dplyr::filter(WellType == "BLANK") %>%
+      dplyr::group_by_at(groups) %>%
+      dplyr::summarise(meanBlankOD = meanNoOutliers(OD), .groups = "drop")
 
-  blankedData <- data %>%
-    dplyr::left_join(blankMeans, groups) %>%
-    dplyr::mutate(blankedOD = OD - meanBlankOD) %>%
-    dplyr::select(-meanBlankOD)
+    blankedData <- data %>%
+      dplyr::left_join(blankMeans, groups) %>%
+      dplyr::mutate(blankedOD = OD - meanBlankOD) %>%
+      dplyr::select(-meanBlankOD)
+  } else if (method = "averageOverTime") {
+    groups <- c("Plate", "Replicate", groups)
+    blankMeans <- data %>%
+      dplyr::filter(WellType == "BLANK") %>%
+      dplyr::group_by_at(groups) %>%
+      dplyr::summarise(meanBlankOD = meanNoOutliers(OD), .groups = "drop")
+
+    blankedData <- data %>%
+      dplyr::left_join(blankMeans, groups) %>%
+      dplyr::mutate(blankedOD = OD - meanBlankOD) %>%
+      dplyr::select(-meanBlankOD)
+  } else {
+    stop("Unknown method argument.")
+  }
   return(blankedData)
 }
 
@@ -127,7 +144,8 @@ blankODs <- function(data, groups = NULL) {
 #' @param dataPath The path of the data files. Defaults to current working directory.
 #' @param filePrefix The prefix of the data files. Defaults to "raw_", but this can be changed, including to "" when all files in the dataPath directory may be treated as potential data files.
 #' @param blankGroups If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.
-
+#' @param method Currently, two methods for blanking are implemented. When code{method} = "perTimePoint" (the default), blanking on a per-time-point basis, i.e. at each time point, the mean of the BLANK well is subtracted from the respective wells to be blanked. When code{method} = "averageOverTime", OD of BLANK wells is averaged across all time points, and then subtracted from ODs at all time points. Note that with this latter method, any trend in OD in in the BLANK wells will lead to spurious results because this trend will be averaged out.
+#' @param tukeyK This is an argument for calculating the blanked ODs. When averaging OD of BLANK wells (across wells and/or across time), outliers may be excluded. Here, Tukey's fences method is used, excluding all OD values that are more than tukeyK times the interquartile range away from the upper and lower quartile, respectively. When kTukey is NULL (the default), no outliers will be excluded.
 #'
 #' @return A single, tidy tibble with complete data from all experiments and replicates.
 #' @export
@@ -136,7 +154,9 @@ blankODs <- function(data, groups = NULL) {
 processODData <- function(specPath='.',
                           dataPath='.',
                           filePrefix = "raw_",
-                          blankGroups = NULL) {
+                          blankGroups = NULL,
+                          method = "perTimePoint",
+                          tukeyK = NULL) {
 
   # make sure the two paths exist and are properly defined:
   specPath <- fixPathName(specPath)
@@ -192,7 +212,7 @@ processODData <- function(specPath='.',
     }
   }
   cat("Blanking ODs ...")
-  allData <- blankODs(allData, groups = blankGroups)
+  allData <- blankODs(allData, groups = blankGroups, method = method, tukeyK = tukeyK)
   cat(" done!\n")
   return(allData)
 }

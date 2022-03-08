@@ -40,3 +40,14 @@ se <- function(x, na.rm=FALSE) {
 # count how many non-NA values a vector has:
 nNonNAs <- function(x) sum(!is.na(x))
 
+
+# calculate a mean after excluding outliers:
+meanNoOutliers <- function(x, tukeyK = NULL, na.rm = FALSE) {
+  if (is.null(tukeyK)) {
+    return(mean(x, na.rm = na.rm))
+  } else {
+    q <- quantile(x, probs = c(0.25, 0.5, 0.75), na.rm = na.rm)
+    x <- x[(x > (q[1] - tukeyK * (q[3] - q[1]))) & (x < (q[3] + tukeyK * (q[3] - q[1])))]
+    return(mean(x, na.rm = na.rm))
+  }
+}
