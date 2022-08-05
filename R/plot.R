@@ -133,10 +133,10 @@ plotODs <- function(data,
     replicates <- sort(unique(data$Replicate))
   }
   if (hours) {
-    data <- data %>% mutate(Time = Time_h)
+    data <- data %>% dplyr::mutate(Time = Time_h)
     xLabel <- "Time [h]"
   } else {
-    data <- data %>% mutate(Time = Time_min)
+    data <- data %>% dplyr::mutate(Time = Time_min)
     xLabel <- "Time [min]"
   }
 
