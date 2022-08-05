@@ -117,7 +117,7 @@ plotODs <- function(data,
                     border = TRUE,
                     hours = TRUE,
                     smallScreen = FALSE) {
-  data <- filter(data, Plate == plate)
+  data <- dplyr::filter(data, Plate == plate)
   if (nrow(data) == 0)
     stop("No data available with the plate ID specified.")
   if (!border)
@@ -181,7 +181,7 @@ shinyPlate <- function(data) {
 
   replicates <- sort(unique(data$Replicate))
 
-  ui<-shiny::fluidPage(
+  ui <- shiny::fluidPage(
     shiny::sidebarLayout(
       shiny::sidebarPanel(
         shiny::radioButtons("Plate", "Plate ID:", choices = unique(data$Plate)),
@@ -195,7 +195,7 @@ shinyPlate <- function(data) {
 
   # shiny server function:
 
-  server<-function(input, output, session) {
+  server <- function(input, output, session) {
     output$main_plot <- shiny::renderPlot({
       selectedReps <- as.integer(input$Replicates)
       plotODs(data,
