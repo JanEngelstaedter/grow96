@@ -45,7 +45,7 @@ this as follows:
 makeSpec_fullFact(plateName = "Experiment1",
                   rowName = "strain", 
                   columnName = "drugConcentration",
-                  rows = paste0("strain", LETTERS[A:H]), 
+                  rows = paste0("strain", LETTERS[1:8]), 
                   columns = 0.05* 0:11,
                   specPath = "specs",
                   plotPath = "plots")
@@ -53,7 +53,7 @@ makeSpec_fullFact(plateName = "Experiment1",
 
 This will generate a single spec file in the designated folder, and also
 a pdf showing the plate design in another folder. The
-\`makeSpec\_fullFact" function also supports empty borders, blank wells,
+\`makeSpec_fullFact” function also supports empty borders, blank wells,
 several replicate plates (including with randomised rows and/or
 columns), and a few other features - check out its documentation.
 

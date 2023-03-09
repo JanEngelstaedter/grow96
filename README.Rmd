@@ -43,7 +43,7 @@ Currently, the package provides four functions for subsequent steps in a standar
 makeSpec_fullFact(plateName = "Experiment1",
                   rowName = "strain", 
                   columnName = "drugConcentration",
-                  rows = paste0("strain", LETTERS[A:H]), 
+                  rows = paste0("strain", LETTERS[1:8]), 
                   columns = 0.05* 0:11,
                   specPath = "specs",
                   plotPath = "plots")
