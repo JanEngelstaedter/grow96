@@ -38,7 +38,7 @@ blankODsFromPlate <- function(data,
 
 # function to calculate blanked ODs using fixed numbers provided
 # (see wrapper blankODs function for details on the parameters.)
-blankODs <- function(data,
+blankODsFixed <- function(data,
                      method = "fromPlate",
                      perTimePoint = TRUE,
                      groups = NULL,
