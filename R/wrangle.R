@@ -116,11 +116,6 @@ processODData <- function(specPath='.',
   if (!dir.exists(dataPath))
     stop(paste0("Couldn't find directory ", dataPath, " for data files."))
 
-  # makeing sure blankMethod value is correct:
-  if(!(blankMethod %in% c("perTimePoint", "averageOverTime", "fixed", "omit"))) {
-    stop("Invalid value for blankMethod.")
-  }
-
   specFileNames <- list.files(specPath)
   specFileNames <- specFileNames[startsWith(specFileNames, "spec_") & endsWith(specFileNames, ".csv")]
   if (length(specFileNames) == 0)
