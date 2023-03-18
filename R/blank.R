@@ -62,7 +62,7 @@ blankODsFixed <- function(data,
         groups <- groups[groups != "Time_min"]
       }
     }
-    blankedODs <- data |>
+    blankedData <- data |>
       dplyr::left_join(values, groups) |>
       dplyr::mutate(blankedOD = OD - blankOD) |>
       dplyr::select(-blankOD)
