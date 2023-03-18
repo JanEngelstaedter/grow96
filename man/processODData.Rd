@@ -4,27 +4,15 @@
 \alias{processODData}
 \title{Import and process OD data}
 \usage{
-processODData(
-  specPath = ".",
-  dataPath = ".",
-  filePrefix = "raw_",
-  blankGroups = NULL,
-  method = "perTimePoint",
-  tukeyK = NULL
-)
+processODData(specPath = ".", dataPath = ".", filePrefix = "raw_")
 }
 \arguments{
 \item{specPath}{The path of the spec files. Defaults to current working directory.}
 
 \item{dataPath}{The path of the data files. Defaults to current working directory.}
 
-\item{filePrefix}{The prefix of the data files. Defaults to "raw_", but this can be changed, including to "" when all files in the dataPath directory may be treated as potential data files.}
-
-\item{blankGroups}{If specified, one or several columns in the \code{data} tibble by which blanking should be grouped. For examples, if there is a variable 'Medium' in the tibble, then with \code{blankGroups = 'Medium'}, averages for blanking will be taken across all wells with \code{wellType="BLANK"} for each value of this column (e.g. "LB", "M9" etc.), and subtracted from OD for data wells with the same Medium values.}
-
-\item{method}{Currently, two methods for blanking are implemented. When code{method} = "perTimePoint" (the default), blanking on a per-time-point basis, i.e. at each time point, the mean of the BLANK well is subtracted from the respective wells to be blanked. When code{method} = "averageOverTime", OD of BLANK wells is averaged across all time points, and then subtracted from ODs at all time points. Note that with this latter method, any trend in OD in in the BLANK wells will lead to spurious results because this trend will be averaged out.}
-
-\item{tukeyK}{This is an argument for calculating the blanked ODs. When averaging OD of BLANK wells (across wells and/or across time), outliers may be excluded. Here, Tukey's fences method is used, excluding all OD values that are more than tukeyK times the interquartile range away from the upper and lower quartile, respectively. When kTukey is NULL (the default), no outliers will be excluded.}
+\item{filePrefix}{The prefix of the data files. Defaults to "raw_", but this can be changed,
+including to "" when all files in the dataPath directory may be treated as potential data files.}
 }
 \value{
 A single, tidy tibble with complete data from all experiments and replicates.

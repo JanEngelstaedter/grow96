@@ -55,13 +55,13 @@ analyseODData <- function(data,
                           tmax = Inf,
                           r2Threshold = 0.5,
                           ...) {
-  growthParams <- data %>%
-    dplyr::group_by(Plate, Replicate, Well, WellType) %>%
-    dplyr::slice(1) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(!(Time_min:blankedOD)) %>%
-    dplyr::filter(WellType == "DATA") %>%
-    dplyr::select(!WellType) %>%
+  growthParams <- data |>
+    dplyr::group_by(Plate, Replicate, Well, WellType) |>
+    dplyr::slice(1) |>
+    dplyr::ungroup() |>
+    dplyr::select(!(Time_min:blankedOD)) |>
+    dplyr::filter(WellType == "DATA") |>
+    dplyr::select(!WellType) |>
     as.data.frame()
 
   # determine names of the two variables, as names of last two columns:
@@ -73,7 +73,7 @@ analyseODData <- function(data,
 
   cat("Calculating growth parameters ...\n")
   for(i in 1:nrow(growthParams)) {
-    dataSubset <- data %>%
+    dataSubset <- data |>
       dplyr::filter(Plate == growthParams$Plate[i] &
                Replicate == growthParams$Replicate[i] &
                Well == growthParams$Well[i])
@@ -88,23 +88,23 @@ analyseODData <- function(data,
 
   # discarding estimates with poor fit:
   if (method == "easylinear") {
-    growthParams %>%
-      dplyr::mutate(mumax = ifelse(r2<r2Threshold, NA, mumax)) %>%
+    growthParams |>
+      dplyr::mutate(mumax = ifelse(r2<r2Threshold, NA, mumax)) |>
       dplyr::mutate(lag = ifelse(r2<r2Threshold, NA, lag))
   }
 
   cat("Summarising growth parameters ...\n")
-  growthParamMeans <- growthParams %>%
-    dplyr::group_by(dplyr::across(variableNames)) %>%
+  growthParamMeans <- growthParams |>
+    dplyr::group_by(dplyr::across(variableNames)) |>
     dplyr::summarise(dplyr::across(names(gps), mean, na.rm = TRUE), .groups = 'drop')
-  growthParamSDs <- growthParams %>%
-    dplyr::group_by(dplyr::across(variableNames)) %>%
+  growthParamSDs <- growthParams |>
+    dplyr::group_by(dplyr::across(variableNames)) |>
     dplyr::summarise(dplyr::across(names(gps), stats::sd, na.rm = TRUE), .groups = 'drop')
-  growthParamSEs <- growthParams %>%
-    dplyr::group_by(dplyr::across(variableNames)) %>%
+  growthParamSEs <- growthParams |>
+    dplyr::group_by(dplyr::across(variableNames)) |>
     dplyr::summarise(dplyr::across(names(gps), se, na.rm = TRUE), .groups = 'drop')
-  growthParamN <- growthParams %>%
-    dplyr::group_by(dplyr::across(variableNames)) %>%
+  growthParamN <- growthParams |>
+    dplyr::group_by(dplyr::across(variableNames)) |>
     dplyr::summarise(dplyr::across(names(gps), nNonNAs), .groups = 'drop')
   return(list(pars = growthParams,
               means = growthParamMeans,

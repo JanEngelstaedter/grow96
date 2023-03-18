@@ -11,12 +11,12 @@
 #'
 qcTemperature <- function(data) {
   cat("Running quality control analyses...")
-  temp <- data %>%
-    dplyr::filter(Well == "A1") %>% # T is the same for all wells, so just pick one here
+  temp <- data |>
+    dplyr::filter(Well == "A1") |> # T is the same for all wells, so just pick one here
     dplyr::select(Plate, Replicate, SetTemperature, Time_min, Temperature)
 
-  TSummary <- temp %>%
-    dplyr::group_by(Plate, Replicate) %>%
+  TSummary <- temp |>
+    dplyr::group_by(Plate, Replicate) |>
     dplyr::summarise(min = min(Temperature),
                      max = max(Temperature),
                      mean = mean(Temperature),
@@ -31,8 +31,8 @@ qcTemperature <- function(data) {
   for(plate in plates) {
     replicates <- unique(temp$Replicate[temp$Plate == plate])
     for(replicate in replicates) {
-      toPlot <- temp %>%
-        dplyr::filter(Plate == plate, Replicate == replicate) %>%
+      toPlot <- temp |>
+        dplyr::filter(Plate == plate, Replicate == replicate) |>
         tidyr::pivot_longer(c("Temperature", "SetTemperature"),
                       names_to = "ActualOrSet", values_to = "Temperature")
 
@@ -63,36 +63,36 @@ qcTemperature <- function(data) {
 #' @keywords internal
 #'
 qcBlanks <- function(data, blankGroups = NULL) {
-  blankODs <- data %>%
-    dplyr::filter(WellType == "BLANK") %>%
+  blankODs <- data |>
+    dplyr::filter(WellType == "BLANK") |>
     dplyr::select(c("Plate", "Replicate", "Well", all_of(blankGroups), "Time_min", "OD"))
 
   if (nrow(blankODs) == 0) { # no blanks in dataset at all!
     return(NULL)
   }
 
-  blankODMeans <- blankODs %>%
-    dplyr::group_by(across(c("Plate", "Replicate", all_of(blankGroups), "Time_min"))) %>%
+  blankODMeans <- blankODs |>
+    dplyr::group_by(across(c("Plate", "Replicate", all_of(blankGroups), "Time_min"))) |>
     dplyr::summarise(meanOD = mean(OD), .groups = "drop")
 
-  blankODSummary <- blankODMeans %>%
-    dplyr::group_by(across(c("Plate", "Replicate", all_of(blankGroups)))) %>%
+  blankODSummary <- blankODMeans |>
+    dplyr::group_by(across(c("Plate", "Replicate", all_of(blankGroups)))) |>
     dplyr::summarise(maxChange = max(abs(meanOD - dplyr::first(meanOD))),
                      mean = min(meanOD),
                      var = stats::var(meanOD),
                      se = se(meanOD), .groups = "drop")
 
   if (is.null(blankGroups)) {
-    blankODMeans <- blankODMeans %>% dplyr::mutate(Group = "all")
+    blankODMeans <- blankODMeans |> dplyr::mutate(Group = "all")
   } else {
     colnames(blankODMeans)[colnames(blankODMeans) == blankGroups[1]] <- "Group"
   }
 
   output <- list(summary = blankODSummary,
                  individual = vector(mode = "list",
-                                     length = data %>%
-                                       dplyr::group_by(Plate, Replicate) %>%
-                                       dplyr::summarise(n=dplyr::n(), .groups = "drop") %>%
+                                     length = data |>
+                                       dplyr::group_by(Plate, Replicate) |>
+                                       dplyr::summarise(n=dplyr::n(), .groups = "drop") |>
                                        nrow()))
 
   plates <- unique(data$Plate)
@@ -101,9 +101,9 @@ qcBlanks <- function(data, blankGroups = NULL) {
     replicates <- unique(data$Replicate[data$Plate == plate])
     for(replicate in replicates) {
       p <- ggplot2::ggplot() +
-        ggplot2::geom_line(data = blankODs %>% dplyr::filter(Plate == plate, Replicate == replicate),
+        ggplot2::geom_line(data = blankODs |> dplyr::filter(Plate == plate, Replicate == replicate),
                            ggplot2::aes(x=Time_min, y=OD, group = Well), alpha = 0.1) +
-        ggplot2::geom_line(data = blankODMeans %>% dplyr::filter(Plate == plate, Replicate == replicate),
+        ggplot2::geom_line(data = blankODMeans |> dplyr::filter(Plate == plate, Replicate == replicate),
                            ggplot2::aes(x=Time_min, y=meanOD, colour = Group), alpha = 1) +
         ggplot2::labs(x = "Time [min]", y = "Optical density") +
         ggplot2::ggtitle("OD for blank wells") +

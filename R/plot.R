@@ -121,22 +121,24 @@ plotODs <- function(data,
   if (nrow(data) == 0)
     stop("No data available with the plate ID specified.")
   if (!border)
-    data <- data %>%
+    data <- data |>
       dplyr::filter(!(Row %in% c("A", "H")) & !(Column %in% c(1, 12)))
   if (blanked)
-    data <- data %>%
+    data <- data |>
       dplyr::mutate(OD = blankedOD)
   if (!is.null(replicates)) {
-    data <- data %>%
+    data <- data |>
       dplyr::filter(Replicate %in% replicates)
   } else {
     replicates <- sort(unique(data$Replicate))
   }
   if (hours) {
-    data <- data %>% dplyr::mutate(Time = Time_h)
+    data <- data |>
+      dplyr::mutate(Time = Time_h)
     xLabel <- "Time [h]"
   } else {
-    data <- data %>% dplyr::mutate(Time = Time_min)
+    data <- data |>
+      dplyr::mutate(Time = Time_min)
     xLabel <- "Time [min]"
   }
 
