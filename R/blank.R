@@ -49,19 +49,20 @@ blankODsFixed <- function(data,
   } else if (is.data.frame(values)) {
     if (!("OD" %in% names(values)))
       stop("Column 'blankOD' expected in 'values' data frame.")
-    groups <- groups[names(groups) != "blankOD"]
+    groups <- names(values)
+    groups <- groups[groups != "blankOD"]
     groups <- c("Plate", "Replicate", groups)
     if (perTimePoint) {
       if (!("Time_min" %in% groups))
         stop("Column 'Time_min' expected in 'values' data frame.")
     } else {
       if (!("Time_min" %in% groups)) {  # first average across time
-        groups <- groups[names(groups) != "blankOD"]
+        groups <- groups[groups != "blankOD"]
         values <- values |>
           dplyr::group_by_at(groups) |>
           dplyr::summarise(blankOD = meanNoOutliers(blankOD, tukeyK = tukeyK), .groups = "drop")
       }
-      groups <- groups[names(groups) != "Time_min"]
+      groups <- groups[groups != "Time_min"]
     }
     blankedODs <- data |>
       dplyr::left_join(values, groups) |>
