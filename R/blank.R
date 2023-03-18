@@ -39,9 +39,7 @@ blankODsFromPlate <- function(data,
 # function to calculate blanked ODs using fixed numbers provided
 # (see wrapper blankODs function for details on the parameters.)
 blankODsFixed <- function(data,
-                     method = "fromPlate",
                      perTimePoint = TRUE,
-                     groups = NULL,
                      values = NULL,
                      tukeyK = NULL) {
 
@@ -132,10 +130,6 @@ blankODs <- function(data,
                      values = NULL,
                      tukeyK = NULL) {
 
-  # test if method is valid:
-  if (!(method %in% c("fromPlate", "fixed")))
-    stop("The method argument needs to be either 'fromPlate' or 'fixed'.")
-
   if (method == "fromPlate") {
     if(!is.null(values))
       warning("Argument 'values' will be ignored.")
@@ -146,7 +140,8 @@ blankODs <- function(data,
     if(!is.null(groups))
       warning("Groups will be imputed from 'values' argument, so the 'groups' argument will be ignored.")
     return(blankODsFixed(data, perTimePoint, values, tukeyK))
+  } else {
+    stop("The method argument needs to be either 'fromPlate' or 'fixed'.")
   }
-  return(blankedData)
 }
 
