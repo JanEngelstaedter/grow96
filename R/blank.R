@@ -50,7 +50,7 @@ blankODsFixed <- function(data,
     if (!("blankOD" %in% names(values)))
       stop("Column 'blankOD' expected in 'values' data frame.")
     groups <- names(values)
-    groups <- c("Plate", "Replicate", groups[groups != "blankOD"])
+    groups <- groups[groups != "blankOD"]
     if (perTimePoint) {
       if (!("Time_min" %in% groups))
         stop("Column 'Time_min' expected in 'values' data frame.")
