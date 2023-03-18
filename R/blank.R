@@ -123,6 +123,8 @@ blankODsFixed <- function(data,
 #'
 #' @return The original \code{data} tibble with an additional column \code{blankedOD}.
 #'
+#' @export
+#'
 blankODs <- function(data,
                      method = "fromPlate",
                      perTimePoint = TRUE,
