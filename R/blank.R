@@ -77,6 +77,24 @@ blankODsFixed <- function(data,
 #'
 #' \code{blankODs} takes a data file (tibble) of optical density (OD) data and uses one of several methods to blank the OD data.
 #'
+#' @param data A tibble containing OD data as produced by the function \code{processODdata}.
+#' @param method Determines whether to blank using OD values on the same plate (code{method} = "fromPlate"),
+#' or fixed OD values as specified in \code{blankValues} argument (code{method} = "fixed").
+#' For more information, see Details below.
+#' @param perTimePoint Determines whether blanking will be performed on a per-time-point basis (code{perTimePoint} = "TRUE"),
+#' or whether blank OD values are averaged through time before being subtracted (code{perTimePoint} = "FALSE").
+#' @param groups One or several columns in the \code{data} tibble by which blanking should be grouped.
+#' This argument is only used when code{method} = "fromPlate". See Details below.
+#' @param values OD value(s) for blanking. This argument is only used when code{method} = "valuesProvided".
+#' See Details below.
+#' @param tukeyK This is an argument for calculating the blanked ODs.
+#' When averaging OD of BLANK wells (across wells and/or across time), outliers may be excluded.
+#' Here, Tukey's fences method is used, excluding all OD values that are more than tukeyK times the
+#' interquartile range away from the upper and lower quartile, respectively.
+#' When kTukey is NULL (the default), no outliers will be excluded.
+#'
+#' @details
+#'
 #' Currently, two methods for blanking are implemented. When code{method} = "fromPlate" (the default),
 #' OD values from wells on the same plate that are designated as type "BLANK" will be used for blanking.
 #' If no groups are provided (argument \code{groups = NULL}, the default), OD values of all BLANK wells
@@ -102,21 +120,6 @@ blankODsFixed <- function(data,
 #' and then subtracted from ODs at all time points. Note that with this latter method,
 #' any trend in OD in the BLANK wells will lead to spurious results because this trend will be averaged out.
 #'
-#' @param data A tibble containing OD data as produced by the function \code{processODdata}.
-#' @param method Determines whether to blank using OD values on the same plate (code{method} = "fromPlate"),
-#' or fixed OD values as specified in \code{blankValues} argument (code{method} = "fixed").
-#' For more information, see Details below.
-#' @param perTimePoint Determines whether blanking will be performed on a per-time-point basis (code{perTimePoint} = "TRUE"),
-#' or whether blank OD values are averaged through time before being subtracted (code{perTimePoint} = "FALSE").
-#' @param groups One or several columns in the \code{data} tibble by which blanking should be grouped.
-#' This argument is only used when code{method} = "fromPlate". See Details below.
-#' @param values OD value(s) for blanking. This argument is only used when code{method} = "valuesProvided".
-#' See Details below.
-#' @param tukeyK This is an argument for calculating the blanked ODs.
-#' When averaging OD of BLANK wells (across wells and/or across time), outliers may be excluded.
-#' Here, Tukey's fences method is used, excluding all OD values that are more than tukeyK times the
-#' interquartile range away from the upper and lower quartile, respectively.
-#' When kTukey is NULL (the default), no outliers will be excluded.
 #'
 #' @return The original \code{data} tibble with an additional column \code{blankedOD}.
 #'
