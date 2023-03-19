@@ -117,15 +117,18 @@ processODData <- function(specPath='.',
     stop(paste0("Couldn't find directory ", dataPath, " for data files."))
 
   specFileNames <- list.files(specPath)
-  specFileNames <- specFileNames[startsWith(specFileNames, "spec_") & endsWith(specFileNames, ".csv")]
+  specFileNames <- specFileNames[startsWith(specFileNames, "spec_") &
+                                 (endsWith(specFileNames, ".csv") | endsWith(specFileNames, ".xlsx"))
+                                ]
   if (length(specFileNames) == 0)
-    stop("No spec files found.")
+    stop("No spec files found. Spec files need to be either csv or xlsx files and their names need to start with 'spec_'.")
 
   dataFileNames <- list.files(dataPath)
 
   allData <- data.frame() # create the allData frame before populating
   for(i in 1:length(specFileNames)) {
-    fileName <- substr(specFileNames[i], 6, nchar(specFileNames[i]) - 4)
+    specFileExtension <- fileExtension(specFileNames[i])
+    fileName <- substr(specFileNames[i], 6, nchar(specFileNames[i]) - nchar(specFileExtension) - 1)
     fileName <- paste0(filePrefix, fileName)
     cat(paste0("Working on data file ", fileName, "..."))
     # check if corresponding data file is present:
@@ -142,8 +145,12 @@ processODData <- function(specPath='.',
     }
 
     if (!is.na(fileName)) {
+      if (specFileExtension == "csv") {
       specs <- suppressMessages(readr::read_csv(paste0(specPath, "/", specFileNames[i]),
                                                 col_types = readr::cols(.default = "c")))
+      } else if (specFileExtension == "xlsx") {
+        specs <- readxl::read_excel(paste0(specPath, "/", specFileNames[i]))
+      }
       trafoData <- importODFile(paste0(dataPath, "/", fileName)) |>
         tidyr::pivot_longer(cols = A1:H12, names_to = "Well", values_to = "OD") |>
         dplyr::mutate(Time_h = Time_min / 60) |>

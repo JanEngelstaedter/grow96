@@ -1,6 +1,4 @@
 
-
-
 # divine the extension from a file name:
 fileExtension <- function (fileName)
 {
