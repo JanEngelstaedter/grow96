@@ -228,7 +228,7 @@ makeSpec_fullFact <- function(plateName,
       fileName <- paste0(specPath, "/spec_", plateName, "_rep", r, ".csv")
     }
     if (file.exists(fileName))
-      stop(paste("Spec file\'", fileName, "\'already exists. Either this file needs to be deleted or a different file name needs to be chosen."))
+      stop(paste0("Spec file '", fileName, "' already exists. Either this file needs to be deleted or a different file name needs to be chosen."))
     readr::write_csv(specDFs[[r]], fileName)
     cat(paste0("Spec file ", fileName, " written.\n"))
 
@@ -241,7 +241,7 @@ makeSpec_fullFact <- function(plateName,
         repPlot <- r
       }
       if (file.exists(fileName))
-        stop(paste("Spec plot\'", fileName, "\'already exists. Either this file needs to be deleted or a different file name needs to be chosen."))
+        stop(paste0("Spec plot '", fileName, "' already exists. Either this file needs to be deleted or a different file name needs to be chosen."))
       specPlot_fullFact(plateName,
                         repPlot,
                         vWellTypeRep,
