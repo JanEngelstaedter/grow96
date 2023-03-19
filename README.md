@@ -4,8 +4,6 @@
 
 [![R build
 status](https://github.com/JanEngelstaedter/grow96/workflows/R-CMD-check/badge.svg)](https://github.com/JanEngelstaedter/grow96/actions)
-[![R build
-status](https://github.com/JanEngelstaedter/grow96/workflows/R-CMD-check/badge.svg)](https://github.com/JanEngelstaedter/grow96/actions)
 <!-- badges: end -->
 
 # grow96
