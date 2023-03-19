@@ -53,7 +53,7 @@ makeSpec_fullFact(plateName = "Experiment1",
 
 This will generate a single spec file in the designated folder, and also
 a pdf showing the plate design in another folder. The
-\`makeSpec_fullFact” function also supports empty borders, blank wells,
+`makeSpec_fullFact` function also supports empty borders, blank wells,
 several replicate plates (including with randomised rows and/or
 columns), and a few other features - check out its documentation.
 
@@ -65,7 +65,7 @@ processed:
 data <- processODData(specPath="specs", dataPath="data")
 ```
 
-Next, we can run a quality control analysis on the data:
+Next, can run a quality control analysis on the data:
 
 ``` r
 qcODData(data, path = "qc")
@@ -73,13 +73,25 @@ qcODData(data, path = "qc")
 
 This will generate a pdf file in the folder “qc” containing information
 about temperature fluctuations through time as well as OD data from
-blank wells.
+blank wells (if there are any).
 
 We can also plot the data in an interactive shiny app:
 
 ``` r
 shinyPlate(data)
 ```
+
+If we are happy with the quality of the data, we can proceed to blank
+all the reads:
+
+``` r
+data <- blankODs(data, method = "fixed", value = 0.05)
+```
+
+In this case we have used a single fixed value for blanking, but the
+`blankODs` function also allows us to blank use designated blank wells
+on a plate, or use different blanks depending on the variables defined
+for a plate.
 
 Finally, we can analyse the data in order to extract statistics such as
 the maximum growth rate and the maximum OD, and to summarise the
@@ -91,3 +103,12 @@ growthAnalysis <- analyseODData(data)
 
 The resulting object is a list containing all these statistics as
 tibbles, which should enable easy downstream analyses and plotting.
+
+Note that we can also use a pipe for the three main steps in the work
+flow:
+
+``` r
+growthAnalysis <- processODData(specPath="specs", dataPath="data") |>
+  blankODs(method = "fixed", value = 0.05) |>
+  analyseODData()
+```
