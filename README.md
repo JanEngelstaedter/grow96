@@ -32,12 +32,12 @@ Load the pacakge like any other R package:
 library(grow96)
 ```
 
-Currently, the package provides four functions for subsequent steps in a
-standard work flow. First, we can define a “spec-file” that specifies
-variables for rows and columns of a 96-well plate. For example, if we
-want to have 8 strains across the rows (“strainA” through “strainH”) and
-12 drug concentrations (0 to 0.55) across the columns, we could specify
-this as follows:
+The package provides functions for subsequent steps in a standard work
+flow. First, we can define a “spec-file” that specifies variables for
+rows and columns of a 96-well plate. For example, if we want to have 8
+strains across the rows (“strainA” through “strainH”) and 12 drug
+concentrations (0 to 0.55) across the columns, we could specify this as
+follows:
 
 ``` r
 makeSpec_fullFact(plateName = "Experiment1",
