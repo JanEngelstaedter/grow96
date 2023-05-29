@@ -64,9 +64,9 @@ analyseODData <- function(data,
     dplyr::select(!WellType) |>
     as.data.frame()
 
-  # determine names of the two variables, as names of last two columns:
+  # determine names of the user-defined variables, as names of last few columns:
   variableNames <- names(growthParams)
-  variableNames <- variableNames[length(variableNames) - c(1,0)]
+  variableNames <- variableNames[(which(variableNames == "Well") + 1):length(variableNames)]
 
   # restrict data to time range:
   data <- dplyr::filter(data, Time_min >= tmin, Time_min <=tmax)
