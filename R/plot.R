@@ -150,7 +150,8 @@ plotODs <- function(data,
   }
   p <- ggplot2::ggplot(data) +
     ggplot2::geom_line(ggplot2::aes(Time, OD, col = as.factor(Replicate))) +
-    ggplot2::facet_grid(rows = ggplot2::vars(Row), cols = dplyr::vars(Column)) +
+    ggplot2::facet_grid(rows = ggplot2::vars(Row),
+                        cols = dplyr::vars(as.integer(Column))) +
     ggplot2::labs(x = xLabel, y = "OD600") +
     ggplot2::theme_bw() +
     ggplot2::scale_colour_manual(name = "Replicate",
