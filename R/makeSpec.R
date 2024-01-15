@@ -87,9 +87,9 @@ makeSpec_fullFact <- function(plateName,
 
   # initial checks:
   if (length(rows) !=nrowsUsed)
-    stop(paste(nrows, "rows expected."))
+    stop(paste(nrowsUsed, "rows expected."))
   if (length(columns) !=ncolsUsed)
-    stop(paste(ncols, "columns expected."))
+    stop(paste(ncolsUsed, "columns expected."))
   if (!is.null(border) && border != 'EMPTY' && border != 'BLANK')
     stop("Unexpected value for 'border' argument: must be 'EMPTY' or 'BLANK'.")
   if (!is.null(randomise) && !(randomise %in% c("rows", "columns", "both")))
