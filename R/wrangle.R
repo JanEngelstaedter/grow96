@@ -105,8 +105,8 @@ importODFile <- function(fileName) {
 #' @return A single, tidy tibble with complete data from all experiments and replicates.
 #' @export
 #'
-processODData <- function(specPath='.',
-                          dataPath='.',
+processODData <- function(specPath = '.',
+                          dataPath = '.',
                           filePrefix = "raw_") {
 
   # make sure the two paths exist and are properly defined:
@@ -137,6 +137,8 @@ processODData <- function(specPath='.',
       fileName <- paste0(fileName, ".csv")
     } else if (paste0(fileName, ".tsv") %in% dataFileNames) {
       fileName <- paste0(fileName, ".tsv")
+    } else if (paste0(fileName, ".txt") %in% dataFileNames) {
+      fileName <- paste0(fileName, ".txt")
     } else if (paste0(fileName, ".xlsx") %in% dataFileNames) {
       fileName <- paste0(fileName, ".xlsx")
     } else {
