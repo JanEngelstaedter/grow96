@@ -21,14 +21,6 @@ fixPathName <- function(path) {
   return(path)
 }
 
-# extract the core name from a spec file name:
-nameFromSpecFileName <- function(specFileName) {
-  name <- substr(specFileNames[i], 6, nchar(specFileNames[i]) - 4)
-  substr(name, 1, 5) <- "?"
-  substr(name, nchar(name) - 3, nchar(name)) <- ""
-  return(name)
-}
-
 # standard error:
 se <- function(x, na.rm=FALSE) {
   if (na.rm) x <- stats::na.omit(x)
