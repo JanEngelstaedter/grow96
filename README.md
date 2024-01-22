@@ -26,7 +26,7 @@ devtools::install_github("JanEngelstaedter/grow96")
 
 ## Use
 
-Load the pacakge like any other R package:
+Load the package like any other R package:
 
 ``` r
 library(grow96)
