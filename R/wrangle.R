@@ -22,11 +22,14 @@ importODFile <- function(fileName) {
     dat <- tibble::as_tibble(utils::read.csv(fileName,
                                              header = FALSE,
                                              fill = TRUE,
+                                             blank.lines.skip = FALSE,
                                              col.names = paste0("V", 1:maxCols)))
   } else if (fileType=="tsv" || fileType=="txt") {
     maxCols <- max(count.fields(fileName, sep = '\t'))
     dat <- tibble::as_tibble(utils::read.delim(fileName,
                                                header = FALSE,
+                                               fill = TRUE,
+                                               blank.lines.skip = FALSE,
                                                col.names = paste0("V", 1:maxCols)))
   } else if (fileType=="xlsx") {
     dat <- suppressMessages(readxl::read_excel(fileName,
