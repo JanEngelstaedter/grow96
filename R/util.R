@@ -3,7 +3,7 @@
 fileExtension <- function (fileName)
 {
   pos <- regexpr("\\.([[:alnum:]]+)$", fileName)
-  ifelse(pos >=0, substring(fileName, pos + 1), "")
+  return(ifelse(pos >=0, substring(fileName, pos + 1), ""))
 }
 
 # make sure a path name is properly formatted.

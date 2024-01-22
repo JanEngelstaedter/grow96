@@ -18,21 +18,22 @@ importODFile <- function(fileName) {
   fileType <- fileExtension(fileName)
   if (fileType=="csv") {
     #dat <- readr::read_csv(fileName, col_names = FALSE)
+    maxCols <- max(count.fields(fileName, sep = ','))
     dat <- tibble::as_tibble(utils::read.csv(fileName,
                                              header = FALSE,
-                                             col.names = paste0("V", 1:500)))
+                                             fill = TRUE,
+                                             col.names = paste0("V", 1:maxCols)))
   } else if (fileType=="tsv" || fileType=="txt") {
-    # couldn't get the readr function to work:    :(
-    #dat <- readr::read_tsv(fileName, col_names = paste0("V", 1:100))
+    maxCols <- max(count.fields(fileName, sep = '\t'))
     dat <- tibble::as_tibble(utils::read.delim(fileName,
                                                header = FALSE,
-                                               col.names = paste0("V", 1:500)))
+                                               col.names = paste0("V", 1:maxCols)))
   } else if (fileType=="xlsx") {
     dat <- suppressMessages(readxl::read_excel(fileName,
                                                col_names = FALSE,
                                                col_types = "text"))
   } else {
-    stop("File type not recognised, extension must be csv, tsv or xlsx.")
+    stop("File type not recognised, extension must be csv, tsv, txt or xlsx.")
   }
 
   # find date:
