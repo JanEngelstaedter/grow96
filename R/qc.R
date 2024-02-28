@@ -78,7 +78,7 @@ qcBlanks <- function(data, blankGroups = NULL) {
   blankODSummary <- blankODMeans |>
     dplyr::group_by(across(c("Plate", "Replicate", all_of(blankGroups)))) |>
     dplyr::summarise(maxChange = max(abs(meanOD - dplyr::first(meanOD))),
-                     mean = min(meanOD),
+                     mean = mean(meanOD),
                      var = stats::var(meanOD),
                      se = se(meanOD), .groups = "drop")
 
