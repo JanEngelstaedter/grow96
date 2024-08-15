@@ -22,7 +22,7 @@ getGrowthParameters <- function(times, ODs, method = "easylinear", ...) {
                maxOD = max(ODs)))
     }
   } else {
-    stop(paste("Method",method,"is not supported"))
+    stop(paste("Method", method,"is not supported"))
   }
 }
 
