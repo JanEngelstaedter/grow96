@@ -78,10 +78,10 @@ blankODsFixed <- function(data,
 #' \code{blankODs} takes a data file (tibble) of optical density (OD) data and uses one of several methods to blank the OD data.
 #'
 #' @param data A tibble containing OD data as produced by the function \code{processODdata}.
-#' @param method Determines whether to blank using OD values on the same plate (code{method} = "fromPlate"),
+#' @param method Determines whether to blank using OD values on the same plate (\code{method} = "fromPlate"),
 #' or fixed OD values as specified in \code{blankValues} argument (\code{method} = "fixed").
 #' For more information, see Details below.
-#' @param perTimePoint Determines whether blanking will be performed on a per-time-point basis (code{perTimePoint} = "TRUE"),
+#' @param perTimePoint Determines whether blanking will be performed on a per-time-point basis (\code{perTimePoint} = "TRUE"),
 #' or whether blank OD values are averaged through time before being subtracted (\code{perTimePoint} = "FALSE").
 #' @param groups One or several columns in the \code{data} tibble by which blanking should be grouped.
 #' This argument is only used when \code{method} = "fromPlate". See Details below.

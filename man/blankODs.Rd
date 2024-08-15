@@ -16,11 +16,11 @@ blankODs(
 \arguments{
 \item{data}{A tibble containing OD data as produced by the function \code{processODdata}.}
 
-\item{method}{Determines whether to blank using OD values on the same plate (code{method} = "fromPlate"),
+\item{method}{Determines whether to blank using OD values on the same plate (\code{method} = "fromPlate"),
 or fixed OD values as specified in \code{blankValues} argument (\code{method} = "fixed").
 For more information, see Details below.}
 
-\item{perTimePoint}{Determines whether blanking will be performed on a per-time-point basis (code{perTimePoint} = "TRUE"),
+\item{perTimePoint}{Determines whether blanking will be performed on a per-time-point basis (\code{perTimePoint} = "TRUE"),
 or whether blank OD values are averaged through time before being subtracted (\code{perTimePoint} = "FALSE").}
 
 \item{groups}{One or several columns in the \code{data} tibble by which blanking should be grouped.
