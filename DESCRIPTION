@@ -22,7 +22,8 @@ Imports:
     scales,
     stats,
     tibble,
-    tidyr
+    tidyr,
+    lubridate
 Suggests:
     shiny,
     wesanderson
