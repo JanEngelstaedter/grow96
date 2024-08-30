@@ -84,11 +84,10 @@ importODFile <- function(fileName) {
   if(fileType == "xlsx") {
     processedDat[,1] <- 24*60*as.double(dplyr::pull(processedDat,1))  # convert from day to minutes
   } else {
-    processedDat[,1] <- processedDat |>
+    processedDat[,1] <- (processedDat |>
       dplyr::pull(1) |>
       lubridate::hms() |>
-      lubridate::period_to_seconds() %>%
-      `/`(60)
+      lubridate::period_to_seconds()) / 60
   }
   processedDat <- dplyr::mutate_all(processedDat, as.double)
   names(processedDat) <- dat[matrixStartRow - 1, matrixStartCol:(matrixStartCol + 97)] |>
