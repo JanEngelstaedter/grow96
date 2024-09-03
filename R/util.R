@@ -9,13 +9,6 @@ fileExtension <- function (fileName)
 # make sure a path name is properly formatted.
 # strings like "myPath", "/myPath/" etc. will all be adjusted to "./myPath"
 fixPathName <- function(path) {
-  if (path == '.') {
-    return(path)
-  } else if (substr(path, 1, 1) == '/') {
-    path <- paste0('.', path)
-  } else if (substr(path, 1, 2) != './') {
-    path <- paste0('./', path)
-  }
   if (substr(path, nchar(path), nchar(path))=="/")
     path <- substr(path, 1, nchar(path) - 1)
   return(path)
