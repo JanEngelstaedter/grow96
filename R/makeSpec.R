@@ -102,8 +102,6 @@ makeSpec_fullFact <- function(plateName,
   if(!dir.exists(specPath)) {
     dir.create(specPath)
     warning(paste0("The directory ", specPath, " for the spec files didn't exist but has now been created."))
-  } else {
-
   }
   if(makePlot & (!dir.exists(plotPath))) {
     dir.create(plotPath)
@@ -178,7 +176,7 @@ makeSpec_fullFact <- function(plateName,
 
   if (is.null(replicates)) { # no replicates
     reps <- 1
-  } else if (length(reps) == 1L) {
+  } else if (length(replicates) == 1L) {
     reps <- 1:replicates
   } else {
     reps <- replicates
