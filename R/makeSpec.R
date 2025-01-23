@@ -181,7 +181,7 @@ makeSpec_fullFact <- function(plateName,
   } else {
     reps <- replicates
   }
-  specDFs <- vector(mode = "list", length = reps)
+  specDFs <- vector(mode = "list", length = length(reps))
   for(r in 1:length(reps)) {
     vWellTypeRep <- vWellType
     vVarRowRep <- vVarRow
