@@ -18,6 +18,7 @@
 #' @param emptyRows A vector of one or more row numbers that will be left empty. By default (value \code{NULL}) no blank rows are introduced.
 #' @param emptyColumns  vector of one or more column numbers that will be left empty. By default (value \code{NULL}) no blank columns are introduced.
 #' @param replicates Number of replicate plate designs to generate. By default (value \code{NULL}), only a single plate design will be generated. When specified as an integer number, this number of spec files will be generated, and for each replicate number will appear in the file name as well as a column in the table.
+#' When a vector of more than one number is supplied, those vector elements will be used as replicate numbers.
 #' @param randomise Whether to randomise rows and/or columns. Possible values are \code{NULL} (no ramdomisation, the default), \code{'rows'}, \code{'columns'}, and \code{'both'}.
 #' @param constants Names and values of additional variables that are constant across the plate (see Details).
 #' @param specPath Path where to save the spec file(s).
@@ -177,11 +178,13 @@ makeSpec_fullFact <- function(plateName,
 
   if (is.null(replicates)) { # no replicates
     reps <- 1
+  } else if (length(reps == 1)) {
+    reps <- 1:replicates
   } else {
     reps <- replicates
   }
   specDFs <- vector(mode = "list", length = reps)
-  for(r in 1:reps) {
+  for(r in 1:length(reps)) {
     vWellTypeRep <- vWellType
     vVarRowRep <- vVarRow
     vVarColumnRep <- vVarColumn
@@ -207,7 +210,7 @@ makeSpec_fullFact <- function(plateName,
     }
 
     specDFs[[r]] <- data.frame(Plate = rep(plateName, nrowsTotal * ncolsTotal),
-                               Replicate = r,
+                               Replicate = reps[r],
                                Row = vRow,
                                Column = vColumn,
                                Well = vWell,
@@ -225,7 +228,7 @@ makeSpec_fullFact <- function(plateName,
     if (is.null(replicates)) {
       fileName <- paste0(specPath, "/spec_", plateName, ".csv")
     } else {
-      fileName <- paste0(specPath, "/spec_", plateName, "_rep", r, ".csv")
+      fileName <- paste0(specPath, "/spec_", plateName, "_rep", reps[r], ".csv")
     }
     if (file.exists(fileName))
       stop(paste0("Spec file '", fileName, "' already exists. Either this file needs to be deleted or a different file name needs to be chosen."))
@@ -237,8 +240,8 @@ makeSpec_fullFact <- function(plateName,
         fileName <- paste0(plotPath, "/specplot_", plateName, ".pdf")
         repPlot <- NULL
       } else {
-        fileName <- paste0(plotPath, "/specplot_", plateName, "_rep", r, ".pdf")
-        repPlot <- r
+        fileName <- paste0(plotPath, "/specplot_", plateName, "_rep", reps[r], ".pdf")
+        repPlot <- reps[r]
       }
       if (file.exists(fileName))
         stop(paste0("Spec plot '", fileName, "' already exists. Either this file needs to be deleted or a different file name needs to be chosen."))

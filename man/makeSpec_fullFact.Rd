@@ -47,7 +47,8 @@ makeSpec_fullFact(
 
 \item{emptyColumns}{vector of one or more column numbers that will be left empty. By default (value \code{NULL}) no blank columns are introduced.}
 
-\item{replicates}{Number of replicate plate designs to generate. By default (value \code{NULL}), only a single plate design will be generated. When specified as an integer number, this number of spec files will be generated, and for each replicate number will appear in the file name as well as a column in the table.}
+\item{replicates}{Number of replicate plate designs to generate. By default (value \code{NULL}), only a single plate design will be generated. When specified as an integer number, this number of spec files will be generated, and for each replicate number will appear in the file name as well as a column in the table.
+When a vector of more than one number is supplied, those vector elements will be used as replicate numbers.}
 
 \item{constants}{Names and values of additional variables that are constant across the plate (see Details).}
 
