@@ -178,7 +178,7 @@ makeSpec_fullFact <- function(plateName,
 
   if (is.null(replicates)) { # no replicates
     reps <- 1
-  } else if (length(reps == 1)) {
+  } else if (length(reps) == 1L) {
     reps <- 1:replicates
   } else {
     reps <- replicates
