@@ -29,7 +29,7 @@ getGrowthParameters <- function(times, ODs, method = "easylinear", ...) {
     else {
       return(c(fit@par["mumax"],
                lag = NA,
-               fit@rsquared,
+               r2 = fit@rsquared,
                maxOD = max(ODs)))
     }
   } else {
