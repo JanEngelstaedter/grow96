@@ -21,6 +21,17 @@ getGrowthParameters <- function(times, ODs, method = "easylinear", ...) {
                growthrates::rsquared(fit),
                maxOD = max(ODs)))
     }
+  } else if (method == "spline") {
+    fit <- tryCatch(growthrates::fit_spline(times, ODs, ...),
+                    error=function(e) NA)
+    if (!isS4(fit))
+      return(c(mumax = NA, lag = NA, r2 = NA, maxOD = max(ODs)))
+    else {
+      return(c(fit@par["mumax"],
+               lag = NA,
+               fit@rsquared,
+               maxOD = max(ODs)))
+    }
   } else {
     stop(paste("Method", method,"is not supported"))
   }
@@ -28,6 +39,8 @@ getGrowthParameters <- function(times, ODs, method = "easylinear", ...) {
 
 
 #' Analyse a dataset of OD reads through time
+#'
+#'
 #'
 #' @param data The data in tidy format, as produced by the function \code{processODData}
 #' @param method Method to be used to analyse the OD data. Currently, the only supported method is "easylinear",
