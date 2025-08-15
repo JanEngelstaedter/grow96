@@ -90,7 +90,7 @@ analyseODData <- function(data,
       dplyr::filter(Plate == growthParams$Plate[i] &
                Replicate == growthParams$Replicate[i] &
                Well == growthParams$Well[i])
-    gps <- getGrowthParameters(dataSubset$Time_min, dataSubset$blankedOD, ...)
+    gps <- getGrowthParameters(dataSubset$Time_min, dataSubset$blankedOD, method, ...)
     growthParams[i, names(gps)] <- gps
     progressPercent <- floor(i/nrow(growthParams)*20)
     cat('\r', paste0(c("0% [", rep("|", progressPercent), rep(" ", 20-progressPercent), "] 100%"), collapse = ""))
@@ -100,7 +100,7 @@ analyseODData <- function(data,
   }
 
   # discarding estimates with poor fit:
-  if (method == "easylinear") {
+  if ((method == "easylinear") || (method == "spline")) {
     growthParams |>
       dplyr::mutate(mumax = ifelse(r2<r2Threshold, NA, mumax)) |>
       dplyr::mutate(lag = ifelse(r2<r2Threshold, NA, lag))
