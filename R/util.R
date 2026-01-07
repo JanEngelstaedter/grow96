@@ -34,3 +34,36 @@ meanNoOutliers <- function(x, tukeyK = NULL, na.rm = FALSE) {
     return(mean(x, na.rm = na.rm))
   }
 }
+
+
+# calculate a matrix of wrap indices:
+# nwraps: number of wrap values
+# group: which group to fill
+# ngroup: number of groups
+# nrow, ncol: dimensions of plate, defaults to 12x8
+# border: should the plate have a border?
+# extend: should the TRUE indices be extended to the end of the row?
+wrap_indices <- function(nwraps, group, ngroups, nrow, ncol, border, extend = TRUE) {
+  if (!is.null(border)) {
+    nrow_group <- (nwraps - 1) %/% (ncol - 2) + 1  # number of rows per group
+    if (extend) nwraps <- nrow_group * (ncol - 2)
+    j <- 2 + (group - 1) * ngroups  # row number where the wrap starts
+    im <- matrix(FALSE, nrow = nrow, ncol = ncol)
+    im_inner <- matrix(c(rep(TRUE, nwraps), rep(FALSE, (nrow_group) * (ncol - 2) - nwraps)),
+                       nrow = nrow_group,
+                       ncol = ncol - 2,
+                       byrow = TRUE)
+    im[j:(j + nrow_group - 1), 2:(ncol - 1)] <- im_inner
+  } else {
+    nrow_group <- (nwraps - 1) %/% ncol + 1  # number of rows per group
+    if (extend) nwraps <- nrow_group * ncol
+    j <- 1 + (group - 1) * ngroups  # row number where the wrap starts
+    im <- matrix(FALSE, nrow = nrow, ncol = ncol)
+    im_inner <- matrix(c(rep(TRUE, nwraps), rep(FALSE, nrow_group * ncol - nwraps)),
+                       nrow = nrow_group,
+                       ncol = ncol,
+                       byrow = TRUE)
+    im[j:(j + nrow_group - 1), 1:ncol] <- im_inner
+  }
+  return(im)
+}
