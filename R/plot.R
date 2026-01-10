@@ -95,6 +95,114 @@ specPlot_fullFact <- function(plateName,
 }
 
 
+#' Generate a pdf file with a plot of a wrapping plate design
+#'
+#' @param plateName Name of the plate.
+#' @param replicate Replicate plate number.
+#' @param vWellType A matrix specifying the type of each well ("DATA", "BLANK" or "EMPTY")
+#' @param rows A vector of values of the row variable
+#' @param columns A vector of values of the column variable
+#' @param border Type of border
+#' @param fileName File name of for the pdf (including path)
+#'
+#'@keywords internal
+#'
+specPlot_wrapping <- function(plateName,
+                              replicate,
+                              vWellType,
+                              vVarWrap,
+                              border,
+                              fileName,
+                              vVarGroup = NULL) {
+  plateX <- 0.03
+  plateY <- 0.3
+  wellWidth = 0.03
+  wellHeight = 0.046
+  nrowsTotal <- 8
+  ncolsTotal <- 12
+  labelSize <- 10
+  colLabelDist <- 0.02
+  rowLabelDist <- 0.01
+  legendX <- 0.07
+  legendY <- 0.8
+  legendWidth <- 0.08
+  legendHeight <- wellHeight
+  legendXSpace <- 0.02
+  legendYSpace <- 0.01
+  legendGroupX <- 0.42
+  legendGroupY <- plateY + nrowsTotal * wellHeight
+  colBLANK <- "orange"
+  colDATA <- "blue"
+  colEMPTY <- "grey"
+  if (!is.null(vVarGroup)) {
+    groups <- unique(vVarGroup[!is.na(vVarGroup)])
+    n <- length(groups)
+    colGROUPS <- hsv(0.06 * (0:(n - 1) - (n - 1)/2) / (n - 1) * 2 + 0.66, 1, 1)
+    names(colGROUPS) <- groups
+  }
+
+  grDevices::pdf(fileName, width = 11.7, height = 8.3)
+  graphics::plot.new()
+  for(i in 1:nrowsTotal) {
+    for(j in 1:ncolsTotal) {
+      if (is.null(vVarGroup)) {
+        colour <- switch(vWellType[i,j],
+                         BLANK = colBLANK, DATA = colDATA, EMPTY = colEMPTY)
+      } else {
+        colour <- switch(vWellType[i,j],
+                         BLANK = colBLANK,
+                         EMPTY = colEMPTY,
+                         DATA = colGROUPS[vVarGroup[i, j]])
+      }
+      graphics::rect(plateX + (j - 1) * wellWidth, plateY + (nrowsTotal - i + 1) * wellHeight,
+                     plateX + j * wellWidth, plateY + (nrowsTotal - i) * wellHeight,
+                     col = colour)
+      graphics::text(plateX + (j - 0.5) * wellWidth, plateY + (nrowsTotal - i + 0.5) * wellHeight,
+                     vVarWrap[i, j], adj = c(0.5, 0.5), cex = 0.5)
+    }
+  }
+  for(i in 0:nrowsTotal) {
+    graphics::lines(c(plateX, plateX + ncolsTotal * wellWidth),
+                    rep(plateY + i * wellHeight, 2))
+  }
+  for(i in 0:ncolsTotal) {
+    graphics::lines(rep(plateX + i * wellWidth, 2),
+                    c(plateY, plateY + nrowsTotal * wellHeight))
+  }
+  # titles:
+  graphics::text(0, 1, plateName, adj = c(0, 1), cex = 2.8)
+  if (!is.null(replicate))
+    graphics::text(0, 0.91, paste0("Replicate #", replicate), adj = c(0, 1), cex = 1.4)
+
+  graphics::rect(legendX, legendY - legendHeight,
+                 legendX + legendWidth, legendY, col = colDATA)
+  graphics::rect(legendX + legendWidth + legendXSpace, legendY - legendHeight,
+                 legendX + 2*legendWidth + legendXSpace, legendY, col = colBLANK)
+  graphics::rect(legendX + 2*legendWidth + 2*legendXSpace, legendY - legendHeight,
+                 legendX + 3*legendWidth + 2*legendXSpace, legendY, col = colEMPTY)
+  graphics::text(legendX + legendWidth/2, legendY - legendHeight/2,
+                 "DATA", adj = c(0.5, 0.5))
+  graphics::text(legendX + 3*legendWidth/2 + legendXSpace, legendY - legendHeight/2,
+                 "BLANK", adj = c(0.5, 0.5))
+  graphics::text(legendX + 5*legendWidth/2 + 2*legendXSpace, legendY - legendHeight/2,
+                 "EMPTY", adj = c(0.5, 0.5))
+  if (!is.null(vVarGroup)) {
+    for (i in 1:n) {
+      # row number for the group legend:
+      r <- which(vVarGroup[, 2] == groups[i])[1]
+      graphics::rect(legendGroupX, plateY + (nrowsTotal - r + 1) * wellHeight,
+                     legendGroupX + legendWidth, plateY + (nrowsTotal - r) * wellHeight,
+                     col = colGROUPS[i])
+      graphics::text(legendGroupX + legendWidth/2, plateY + (nrowsTotal - r + 0.5) * wellHeight,
+                     groups[i], adj = c(0.5, 0.5))
+    }
+  }
+  grDevices::dev.off()
+}
+
+
+
+
 #' Plot OD data through time
 #'
 #' This function produces a plot where OD through time is shown for each well of a 96-well plate.
