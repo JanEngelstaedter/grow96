@@ -302,8 +302,8 @@ makeSpec_fullFact <- function(plateName,
 #' #                  wraps = paste0("Strain", 1:48)
 #'
 #' # more complex design:
-#' # makeSpec_fullFact(plateName = "Example2",
-#'                     wrapName = "strain",
+#' # makeSpec_wrapping(plateName = "Example2",
+#' #                   wrapName = "strain",
 #' #                   wraps = paste0("Strain", 1:24),
 #' #                   groupName = "Drug",
 #' #                   groups = c("no drug", "RIF"),
@@ -396,6 +396,8 @@ makeSpec_wrapping <- function(plateName,
     if (!is.null(groups)) {
       vVarGroup <- matrix(NA, nrow = nrowsTotal, ncol = ncolsTotal)
       groups_rep <- groups
+    } else {
+      vVarGroup <- NULL
     }
     if (!is.null(randomise)) {
       if (randomise %in% c("wraps", "both")) {
@@ -470,10 +472,10 @@ makeSpec_wrapping <- function(plateName,
       specPlot_wrapping(plateName,
                         repPlot,
                         vWellType,
-                        stats::na.omit(vVarRowRep[,2]),
-                        stats::na.omit(vVarColumnRep[2,]),
+                        vVarWrap,
                         border,
-                        fileName)
+                        fileName,
+                        vVarGroup = vVarGroup)
       cat(paste0("Spec plot file ", fileName, " written.\n"))
     }
   }
