@@ -3,7 +3,6 @@
 #' Obtain quality control data and plots on temperature
 #'
 #' @param data The data set, as produced by processODData
-#' @param setT The temperature to which the instrument had been set
 #'
 #' @return A list of two elements: a summary table and a list of plots for each plate
 #'
