@@ -3,6 +3,7 @@
 export(analyseODData)
 export(blankODs)
 export(makeSpec_fullFact)
+export(makeSpec_wrapping)
 export(plotODs)
 export(processODData)
 export(qcODData)
