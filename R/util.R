@@ -47,7 +47,7 @@ wrap_indices <- function(nwraps, group, ngroups, nrow, ncol, border, extend = TR
   if (!is.null(border)) {
     nrow_group <- (nwraps - 1) %/% (ncol - 2) + 1  # number of rows per group
     if (extend) nwraps <- nrow_group * (ncol - 2)
-    j <- 2 + (group - 1) * ngroups  # row number where the wrap starts
+    j <- 2 + (group - 1) * (6 %/% ngroups)  # row number where the wrap starts
     im <- matrix(FALSE, nrow = nrow, ncol = ncol)
     im_inner <- matrix(c(rep(TRUE, nwraps), rep(FALSE, (nrow_group) * (ncol - 2) - nwraps)),
                        nrow = nrow_group,

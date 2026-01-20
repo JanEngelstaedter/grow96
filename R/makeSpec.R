@@ -347,6 +347,8 @@ makeSpec_wrapping <- function(plateName,
   nrowsPerGroup <- (nwraps - 1) %/% ncolsUsed + 1
 
   # initial checks:
+  if (nwraps <= ncolsUsed)
+    stop("Not enough values in wraps vector to wrap over multiple rows.")
   if (!(spares %in% c("EMPTY", "BLANK")))
     stop("The spare argument should either be EMPTY or BLANK.")
   if (nrowsPerGroup * ngroups > ncolsUsed)
