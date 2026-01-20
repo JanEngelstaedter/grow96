@@ -353,8 +353,8 @@ makeSpec_wrapping <- function(plateName,
     stop("Not enough rows on plate for this design.")
   if (!is.null(border) && border != 'EMPTY' && border != 'BLANK')
     stop("Unexpected value for 'border' argument: must be 'EMPTY' or 'BLANK'.")
-  if (!is.null(randomise) && !(randomise %in% c("rows", "columns", "both")))
-    stop("Unexpected value for 'randomise' argument: must be 'rows', 'columns' or 'both'.")
+  if (!is.null(randomise) && !(randomise %in% c("wraps", "groups", "both")))
+    stop("Unexpected value for 'randomise' argument: must be 'wraps', 'groups' or 'both'.")
 
   # check paths:
   specPath <- fixPathName(specPath)
