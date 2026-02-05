@@ -45,7 +45,7 @@ blankODsFixed <- function(data,
 
   if (is.vector(values) && length(values) == 1) {
     blankedData <- data |>
-      mutate(blankedOD = OD - values)
+      dplyr::mutate(blankedOD = OD - values)
   } else if (is.data.frame(values)) {
     if (!("blankOD" %in% names(values)))
       stop("Column 'blankOD' expected in 'values' data frame.")
