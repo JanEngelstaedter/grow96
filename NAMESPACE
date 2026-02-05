@@ -2,6 +2,7 @@
 
 export(analyseODData)
 export(blankODs)
+export(export_for_CRfitting)
 export(makeSpec_fullFact)
 export(makeSpec_wrapping)
 export(plotODs)
