@@ -167,15 +167,13 @@ processODData <- function(specPath = '.',
         dplyr::relocate(Plate, Replicate, Date, PlateReader, SetTemperature, Row, Column, Well, WellType) |>
         dplyr::relocate(Time_min, Time_h, Temperature,  OD, .after = last_col())
 
-      if (all(names(allData)==names(trafoData))) {
-        allData <- rbind(allData, trafoData)
-        cat(paste0("Working on data file ", fileName, "... done!\n"))
-      } else {
-        stop(paste0("Columns in ", specFileNames[i], " don't match with previous files."))
+      if (sort(names(allData)) != sort(names(trafoData))) {
+        warning(paste0("Columns in ", specFileNames[i], " don't match with previous files. This is usually not intended."))
       }
+      allData <- bind_rows(allData, trafoData)
+      cat(paste0("Working on data file ", fileName, "... done!\n"))
     }
   }
   cat(" done!\n")
   return(allData)
 }
-
