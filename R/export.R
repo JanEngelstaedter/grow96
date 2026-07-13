@@ -61,18 +61,52 @@ export_for_CRfitting <- function(ODs,
     dplyr::mutate(Plate_ID = dplyr::cur_group_id()) |>
     dplyr::ungroup()
 
-  # add an ID for each time series:
+  # add an ID for each well (nested in plate):
   ODs <- ODs |>
     dplyr::group_by(Plate, Replicate, Well) |>
-    dplyr::mutate(Timeseries_ID = dplyr::cur_group_id()) |>
+    dplyr::mutate(Well_ID = dplyr::cur_group_id()) |>
+    dplyr::ungroup()
+
+  # add an ID for each growth time series:
+  # note: BLANK wells receive NA values
+  ODs <- ODs |>
+    dplyr::group_by(Plate, Replicate, Well) |>
+    dplyr::mutate(
+      Timeseries_ID = ifelse(
+        WellType == 'DATA',
+        dplyr::cur_group_id(),
+        NA
+      )
+    ) |>
     dplyr::ungroup() |>
+    dplyr::mutate(
+      Timeseries_ID = ifelse(
+        is.na(Timeseries_ID),
+        NA,
+        match(Timeseries_ID, sort(unique(Timeseries_ID)))
+      )
+    ) |>
     dplyr::arrange(Plate_ID, Timeseries_ID, Time_h)
 
   # add an ID for each independent inoculum source:
+  # note: BLANK wells receive NA values
   ODs <- ODs |>
     dplyr::group_by(across(all_of(inoculum_IDs))) |>
-    dplyr::mutate(Inoculum_ID = dplyr::cur_group_id()) |>
-    dplyr::ungroup()
+    dplyr::mutate(
+      Inoculum_ID = ifelse(
+        WellType == 'DATA',
+        dplyr::cur_group_id(),
+        NA
+      )
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(
+      Inoculum_ID = ifelse(
+        is.na(Inoculum_ID),
+        NA,
+        match(Inoculum_ID, sort(unique(Inoculum_ID)))
+      )
+    )
 
   # add an ID for each independent growth medium:
   ODs <- ODs |>
